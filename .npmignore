@@ -1,0 +1,10 @@
+# Ignore development and build-related files
+/.storybook/
+/node_modules/
+/public/
+/src/
+/.gitignore/
+/.npmignore/
+/tsconfig.json/
+/webpack.config.js/
+/yarn.lock/
