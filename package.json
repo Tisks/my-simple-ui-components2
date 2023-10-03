@@ -1,6 +1,6 @@
 {
   "name": "my-simple-ui-components2",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": false,
   "main": "build/index.js",
   "repository": "my-simple-ui-components2",
