@@ -1,9 +1,9 @@
 # Ignore development and build-related files
-/.storybook/
-/node_modules/
-/public/
-/src/
-/.gitignore/
+.storybook
+node_modules
+public
+src
+.gitignore
 tsconfig.json
 webpack.config.js
-/yarn.lock/
+yarn.lock
