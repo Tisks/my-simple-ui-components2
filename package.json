@@ -1,12 +1,11 @@
 {
   "name": "my-simple-ui-components2",
   "version": "0.0.13",
+  "repository": "my-simple-ui-components2",
   "description": "A simple template for a custom React component library",
   "scripts": {
     "build": "rollup -c",
-    "clean-install": "rm -rf ./dist ./node_modules yarn.lock && yarn install",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "clean-install": "rm -rf ./dist ./node_modules yarn.lock && yarn install"
   },
   "dependencies": {
     "react": "^17.0.1"
