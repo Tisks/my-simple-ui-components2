@@ -29,7 +29,7 @@ export default [
         modules: true, // Enable CSS modules
         extract: true, // Extract CSS to a separate file
         minimize: true, // Minimize the CSS
-        extensions: [".scss"], // Specify the file extensions to process
+        extensions: [".scss", ".css"], // Specify the file extensions to process
       }),
     ],
   },
