@@ -4,7 +4,7 @@
   "description": "A simple template for a custom React component library",
   "scripts": {
     "build": "rollup -c",
-    "clean-install": "rm -rf ./dist && rm -r ./node_modules && rm yarn.lock && yarn install",
+    "clean-install": "rm -rf ./dist ./node_modules yarn.lock && yarn install",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
