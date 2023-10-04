@@ -3,7 +3,6 @@ import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import dts from "rollup-plugin-dts";
 import postcss from "rollup-plugin-postcss";
-import sass from "rollup-plugin-sass";
 
 import packageJson from "./package.json" assert { type: "json" };
 
@@ -26,8 +25,12 @@ export default [
       resolve(),
       commonjs(),
       typescript({ tsconfig: "./tsconfig.json" }),
-      postcss(),
-      sass(), // Add the Sass plugin to handle SCSS files
+      postcss({
+        modules: true, // Enable CSS modules
+        extract: true, // Extract CSS to a separate file
+        minimize: true, // Minimize the CSS
+        extensions: [".scss"], // Specify the file extensions to process
+      }),
     ],
   },
   {

@@ -15,6 +15,7 @@
     "@rollup/plugin-typescript": "^11.1.4",
     "@types/react": "^18.2.24",
     "postcss": "^8.4.31",
+    "postcss-modules": "^6.0.0",
     "rollup": "^3.29.4",
     "rollup-plugin-dts": "^6.0.2",
     "rollup-plugin-postcss": "^4.0.1",
