@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "..";
+import { Button } from "my-simple-ui-components2-button";
 
 import styles from "./header.module.scss";
 

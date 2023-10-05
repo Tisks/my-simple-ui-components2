@@ -4,7 +4,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "baseUrl": "./",
     "paths": {
-      "my-simple-ui-components2": ["../src"]
+      "my-simple-ui-components2": ["../packages"]
     },
     "allowJs": true,
     "skipLibCheck": true,
