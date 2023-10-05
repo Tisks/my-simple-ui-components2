@@ -3,7 +3,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import dts from "rollup-plugin-dts";
 import postcss from "rollup-plugin-postcss";
-
+import { libStylePlugin } from "rollup-plugin-lib-style";
 import packageJson from "./package.json" assert { type: "json" };
 
 export default [
@@ -25,12 +25,7 @@ export default [
       resolve(),
       commonjs(),
       typescript({ tsconfig: "./tsconfig.json" }),
-      postcss({
-        modules: true, // Enable CSS modules
-        extract: true, // Extract CSS to a separate file
-        minimize: true, // Minimize the CSS
-        extensions: [".scss", ".css"], // Specify the file extensions to process
-      }),
+      libStylePlugin(),
     ],
   },
   {
