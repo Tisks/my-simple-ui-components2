@@ -37,6 +37,6 @@ export default [
     input: "dist/esm/types/index.d.ts",
     output: [{ file: "dist/index.d.ts", format: "esm" }],
     plugins: [dts()],
-    external: [/\.scss$/, /\.css$/],
+    external: [/\.scss$/, /\.css$/, /^my-simple-ui-components2/],
   },
 ];
