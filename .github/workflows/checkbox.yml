@@ -13,14 +13,16 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Read Labels from labels.yml
+        id: read_labels
+        run: echo "::set-output name=labels::$(cat labels.yml)"
+
       - name: Create Comment
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '👋 Thanks for reporting!'
-            })
+            const labels = ${{ steps.read_labels.outputs.labels }};
+            const defaultLabel = labels.find(label => label.name === 'patch'); // Use 'patch' as the default label
+            const body = `Please review the code carefully before merging and check the following box if the correct type of version is going to be merged\n\n- [ ] This PR means a new version of the package ("${defaultLabel.name}")`;
+            github.issues.createComment({ issue_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo, body });
