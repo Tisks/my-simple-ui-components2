@@ -22,8 +22,8 @@ jobs:
         with:
           script: |
             const labels = ${{ steps.read_labels.outputs.labels }};
-            const labelNames = labels.map(label => label.name);
-            const body = `Please review the code carefully before merging and check the following box if the correct type of version is going to be merged\n\n- [ ] This PR means a new version of the package ("${labelNames.join(', ')}")`;
+            const defaultLabel = labels.find(label => label.name === 'patch'); // Use 'patch' as the default label
+            const body = `Please review the code carefully before merging and check the following box if the correct type of version is going to be merged\n\n- [ ] This PR means a new version of the package ("${defaultLabel.name}")`;
             github.issues.createComment({ issue_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo, body });
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
