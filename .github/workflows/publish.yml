@@ -23,8 +23,9 @@ jobs:
       - name: Get Version from package.json
         id: get-version
         run: |
-          TAG_VERSION=$(jq -r '.version' ./package.json)
-          echo "::set-output name=tag_version::${TAG_VERSION}"
+            cd $GITHUB_WORKSPACE  # Change to the root directory of your project
+            TAG_VERSION=$(jq -r '.version' ./package.json)
+            echo "::set-output name=tag_version::$TAG_VERSION"
 
       - name: Extract Version Bump
         if: steps.pr-merged.outputs.pr_merged == 'true'
