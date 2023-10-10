@@ -3,7 +3,7 @@
 
 
 Please check the type of version bump: 
-- [ ] Patch
+- [X] Patch
 - [ ] Minor
 - [ ] Major
 - [ ] No changes
