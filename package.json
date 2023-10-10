@@ -5,7 +5,7 @@
   "description": "A simple template for a custom React component library",
   "license": "UNLICENSED",
   "scripts": {
-    "build": "rollup -c && true",
+    "build": "rollup -c",
     "test": "jest",
     "test:cov": "yarn test --coverage .",
     "clean-install": "rm -rf ./dist ./node_modules yarn.lock && yarn",
