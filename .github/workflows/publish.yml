@@ -111,28 +111,6 @@ jobs:
           git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
           git push origin "v$TAG_VERSION"
 
-      - name: Execute Changelog Script and Store in Variable
-        id: changelog
-        if: steps.pr-merged.outputs.pr_merged == 'true'
-        run: |
-
-          CHANGELOG=$(curl -L \
-              -X POST \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              "${{ github.api_url }}/repos/${{ github.repository }}/releases/generate-notes" \
-              -d '{"tag_name":"v${{ steps.new-version.outputs.new_tag_version }}","target_commitish":"main","previous_tag_name":"", "configuration_file_path":""}')
-
-          # Use jq to extract the PR body
-          CHANGELOG_BODY=$(echo "$CHANGELOG" | jq -r '.body')
-
-          echo "CHANGELOG: $CHANGELOG_BODY"
-
-          echo "::set-output name=changelog::$CHANGELOG_BODY"
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Install
         run: yarn install --frozen-lockfile
 
