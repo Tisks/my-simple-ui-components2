@@ -121,7 +121,7 @@ jobs:
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
                 "${{ github.api_url }}/repos/${{ github.repository }}/releases/generate-notes" \
-                -d '{"tag_name":"v${{ steps.new-version.outputs.new_tag_version }}","target_commitish":"main","previous_tag_name":""}')
+                -d '{"tag_name":"v${{ steps.new-version.outputs.new_tag_version }}","target_commitish":"main","previous_tag_name":"", "configuration_file_path":""}')
 
             echo "CHANGELOG_API: $CHANGELOG_API"
 
