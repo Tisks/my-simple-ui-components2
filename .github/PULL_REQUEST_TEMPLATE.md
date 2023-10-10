@@ -7,4 +7,5 @@ Please check the type of version bump:
 - [ ] Minor
 - [ ] Major
 
-Do create a new release of the library? - [X]
+Do create a new release of the library? 
+- [X]
