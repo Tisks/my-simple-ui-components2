@@ -24,8 +24,8 @@ jobs:
         id: get-version
         run: |
             pwd  # Print the current working directory
-            ls   # List files in the current directory
-            TAG_VERSION=$(jq -r '.version' ../../package.json)
+            find . -type f  # List all files in the current directory and subdirectories
+            TAG_VERSION=$(jq -r '.version' ./package.json)
             echo "::set-output name=tag_version::$TAG_VERSION"
 
       - name: Extract Version Bump
