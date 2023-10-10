@@ -110,14 +110,6 @@ jobs:
           TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
           git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
           git push origin "v$TAG_VERSION"
-
-      - name: Read package.json
-        if: steps.pr-merged.outputs.pr_merged == 'true'
-        run: |
-          # Read the package.json file and store it in a variable
-          PACKAGE_JSON=$(<package.json)
-          echo "Current package.json content: $PACKAGE_JSON"
-          echo "::set-output name=package_json::$PACKAGE_JSON"
   
       - name: Update package version
         id: update-version
