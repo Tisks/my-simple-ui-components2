@@ -116,15 +116,18 @@ jobs:
         if: steps.pr-merged.outputs.pr_merged == 'true'
         run: |
 
-            CHANGELOG_API=$(curl -L \
+            CHANGELOG=$(curl -L \
                 -X POST \
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
                 "${{ github.api_url }}/repos/${{ github.repository }}/releases/generate-notes" \
                 -d '{"tag_name":"v${{ steps.new-version.outputs.new_tag_version }}","target_commitish":"main","previous_tag_name":"", "configuration_file_path":""}')
 
-            echo "CHANGELOG_API: $CHANGELOG_API"
-            echo "::set-output name=changelog::$CHANGELOG_API"
+            echo "CHANGELOG: $CHANGELOG"
+            # Use jq to extract the PR body
+            CHANGELOG_BODY=$(echo "$CHANGELOG" | jq -r '.body')
+
+            echo "::set-output name=changelog::$CHANGELOG_BODY"
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
