@@ -132,7 +132,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
-            gh release create "v$TAG_VERSION" ./dist/* \
+            gh release create "v$TAG_VERSION" ./* \
             --title "v$TAG_VERSION" \
             --notes CHANGELOG.md
           
