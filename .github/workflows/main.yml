@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Check Checkbox
         id: checkbox
@@ -24,17 +24,19 @@ jobs:
           CHECKED_COUNT=$(echo "$PR_BODY" | grep -o '\[x\]' | wc -l)
 
           if [ "$CHECKED_COUNT" -eq 0 ] || [ "$CHECKED_COUNT" -eq 1 ]; then
-            echo "Valid number of checkboxes checked."
+            echo "Valid number of checkboxes checked. Proceeding with merge."
           else
             echo "There can be only one checkbox checked of version bump at the time"
             
             # Set a status using actions/github-script
-            - name: Feedback
-              uses: actions/github-script@v6
-              with:
-                github-token: ${{ secrets.GITHUB_TOKEN }}
-                script: |
-                    github.rest.issues.createComment({ issue_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo, body: `There can be only one checkbox checked of version bump at the time` });
+            github.repos.createStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: github.sha,
+              state: "failure",
+              description: "There can be only one checkbox checked of version bump at the time",
+              context: "checkbox-validation"
+            });
             
             exit 1
           fi
