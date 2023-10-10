@@ -7,4 +7,5 @@ const newVersion = process.argv[3];
 const changelog = execSync(`npx conventional-changelog-cli -p react -r 0 -t ${priorVersion} -n ${newVersion}`).toString();
 
 fs.writeFileSync('CHANGELOG.md', changelog);
+console.log(changelog)
 console.log('Changelog generated and saved.');
