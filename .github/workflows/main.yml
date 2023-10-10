@@ -16,10 +16,8 @@ jobs:
       - name: Check Checkbox
         id: checkbox
         run: |
-          PR_BODY=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                            -H "Accept: application/vnd.github.v3+json" \
-                            "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | jq -r '.body')
-
+          PR_BODY=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | jq -r '.body')
+          
           # Count the number of checked checkboxes
           CHECKED_COUNT=$(echo "$PR_BODY" | grep -o '\[x\]' | wc -l)
 
