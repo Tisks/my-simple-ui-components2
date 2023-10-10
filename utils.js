@@ -6,7 +6,7 @@ const getComponentNames = (indexPath = "packages/index.ts") => {
   const indexContent = fs.readFileSync(indexPath, "utf8");
   const componentRegex = /export { ([A-Z][a-zA-Z]*) } from/g;
   const componentMatches = indexContent.matchAll(componentRegex);
-  const componentNames = [...componentMatches].map((match) => match[1]);
+  const componentNames = [...componentMatches].map((match) => match[1]) ;
   return componentNames;
 };
 
