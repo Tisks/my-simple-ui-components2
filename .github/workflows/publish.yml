@@ -20,6 +20,9 @@ jobs:
             echo "::set-output name=pr_merged::false"
           fi
 
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
       - name: Setup node
         if: steps.pr-merged.outputs.pr_merged == 'true'
         uses: actions/setup-node@v3
@@ -110,7 +113,7 @@ jobs:
            TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
            git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
            git push origin "v$TAG_VERSION"
-           
+
       - name: Install
         run: yarn install --frozen-lockfile
    
