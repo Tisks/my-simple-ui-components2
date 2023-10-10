@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "repository": "my-simple-ui-components2",
   "description": "A simple template for a custom React component library",
+  "license": "UNLICENSED",
   "scripts": {
-    "build": "node ./utils.js && rollup -c && true",
+    "build": "rollup -c",
     "test": "jest",
-    "clean-install": "rm -rf ./dist ./node_modules yarn.lock && yarn"
+    "test:cov": "yarn test --coverage .",
+    "clean-install": "rm -rf ./dist ./node_modules yarn.lock && yarn",
+    "clean-build": "yarn clean-install && yarn build",
+    "clean-storybook-install": "yarn clean-install && cd storybook && yarn clean-install"
   },
   "dependencies": {
     "react": "^17.0.1",

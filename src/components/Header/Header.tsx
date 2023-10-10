@@ -1,18 +1,8 @@
 import React from "react";
-import { Button } from "my-simple-ui-components2-button";
+import { HeaderProps } from ".";
+import { Button } from "..";
 
 import styles from "./header.module.scss";
-
-type User = {
-  name: string;
-};
-
-interface HeaderProps {
-  user?: User;
-  onLogin: () => void;
-  onLogout: () => void;
-  onCreateAccount: () => void;
-}
 
 const Header = ({ user, onLogin, onLogout, onCreateAccount }: HeaderProps) => (
   <header>

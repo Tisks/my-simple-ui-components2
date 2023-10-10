@@ -19,20 +19,20 @@ jobs:
             echo "Pull request is not merged."
             echo "::set-output name=pr_merged::false"
           fi
-      - name: Checkout code
-        uses: actions/checkout@v2
 
       - name: Setup node
+        if: steps.pr-merged.outputs.pr_merged == 'true'
         uses: actions/setup-node@v3
         with:
-            node-version: 16
-        
+          node-version: 16
+
       - name: Get Version from package.json
+        if: steps.pr-merged.outputs.pr_merged == 'true'
         id: get-version
         run: |
-            TAG_VERSION=$(node get-version.js)
-            echo "TAG_VERSION Body: $TAG_VERSION"
-            echo "::set-output name=tag_version::$TAG_VERSION"
+          TAG_VERSION=$(node get-version.js)
+          echo "TAG_VERSION Body: $TAG_VERSION"
+          echo "::set-output name=tag_version::$TAG_VERSION"
 
       - name: Extract Version Bump
         if: steps.pr-merged.outputs.pr_merged == 'true'
@@ -44,7 +44,7 @@ jobs:
 
           # Use jq to extract the PR body
           PR_BODY_BODY=$(echo "$PR_BODY" | jq -r '.body')
-        
+
           echo "PR Body: $PR_BODY_BODY"
 
           # Declare variables outside the conditional blocks
@@ -63,7 +63,9 @@ jobs:
 
           echo "::set-output name=version_bump::$VERSION_BUMP"
 
-      - name: Use Extracted Information
+      - name: Determine new version
+        id: new-version
+        if: steps.pr-merged.outputs.pr_merged == 'true'
         run: |
           echo "Version Bump: ${{ steps.extract-info.outputs.version_bump }}"
           echo "Actual version: ${{ steps.get-version.outputs.tag_version }}"
@@ -77,7 +79,7 @@ jobs:
           MAJOR="${VERSION_PARTS[0]}"
           MINOR="${VERSION_PARTS[1]}"
           PATCH="${VERSION_PARTS[2]}"
-          
+
           # Determine the ultimate TAG_VERSION based on VERSION_BUMP
           if [[ "${{ steps.extract-info.outputs.version_bump }}" == "Patch" ]]; then
             NEW_PATCH=$((PATCH + 1))
@@ -93,3 +95,45 @@ jobs:
           fi
           echo "NEW_VERSION: $NEW_VERSION"  # Add this line to print the NEW_VERSION
           echo "::set-output name=new_tag_version::$NEW_VERSION"
+
+      - name: Execute Changelog Script and Store in Variable
+        id: changelog
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        run: |
+          node generate-changelog.js "${{ steps.get-version.outputs.tag_version }}" "${{ steps.new-version.outputs.new_tag_version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Tag
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        run: |
+           TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
+           git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
+           git push origin "v$TAG_VERSION"
+           
+      - name: Install
+        run: yarn install --frozen-lockfile
+   
+      - name: Build package
+        run: yarn build
+
+      - name: Create Release
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
+            gh release create "v$TAG_VERSION" ./dist/* \
+            --title "v$TAG_VERSION" \
+            --notes CHANGELOG.md
+          
+      - name: Publish to NPM
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}  # Make sure you have an NPM token set as a secret
+
+      - name: Delete Changelog
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        run: |
+          rm CHANGELOG.md

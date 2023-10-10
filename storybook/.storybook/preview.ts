@@ -1,5 +1,4 @@
 import type { Preview } from "@storybook/react";
-import '../../dist/esm/index.css';
 
 const preview: Preview = {
   parameters: {

@@ -1,11 +1,7 @@
 import React from "react";
-import { Header } from "my-simple-ui-components2-header";
+import { Header, User } from "..";
 
 import styles from "./page.module.scss";
-
-type User = {
-  name: string;
-};
 
 const Page: React.FC = () => {
   const [user, setUser] = React.useState<User>();
