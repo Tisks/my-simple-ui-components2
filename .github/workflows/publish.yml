@@ -66,9 +66,9 @@ jobs:
       - name: Use Extracted Information
         run: |
           echo "Version Bump: ${{ steps.extract-info.outputs.version_bump }}"
-          echo "Actual version: ${{ steps.extract-info.outputs.tag_version }}"
+          echo "Actual version: ${{ steps.get-version.outputs.tag_version }}"
 
-          CURRENT_VERSION="${{ steps.extract-info.outputs.tag_version }}"
+          CURRENT_VERSION="${{ steps.get-version.outputs.tag_version }}"
 
           NEW_VERSION="Unknown"
 
