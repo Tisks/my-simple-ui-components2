@@ -41,18 +41,21 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}")
 
-          echo "PR Body: $PR_BODY"  # Add this line to print the PR_BODY
+          # Use jq to extract the PR body
+          PR_BODY_BODY=$(echo "$PR_BODY" | jq -r '.body')
+        
+          echo "PR Body: $PR_BODY_BODY"
 
           # Declare variables outside the conditional blocks
           VERSION_BUMP="Unknown"
           RELEASE_DECISION="Unknown"
 
           # Extract the version bump type (Patch, Minor, or Major)
-          if [[ "$PR_BODY" == *"[x]"* && "$PR_BODY" == *"Patch"* ]]; then
+          if [[ "$PR_BODY_BODY" == *"[x]"* && "$PR_BODY_BODY" == *"Patch"* ]]; then
             VERSION_BUMP="Patch"
-          elif [[ "$PR_BODY" == *"[x]"* && "$PR_BODY" == *"Minor"* ]]; then
+          elif [[ "$PR_BODY_BODY" == *"[x]"* && "$PR_BODY_BODY" == *"Minor"* ]]; then
             VERSION_BUMP="Minor"
-          elif [[ "$PR_BODY" == *"[x]"* && "$PR_BODY" == *"Major"* ]]; then
+          elif [[ "$PR_BODY_BODY" == *"[x]"* && "$PR_BODY_BODY" == *"Major"* ]]; then
             VERSION_BUMP="Major"
           else
             VERSION_BUMP="Unknown"  # Default if none selected
