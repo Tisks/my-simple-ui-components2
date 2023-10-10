@@ -19,13 +19,16 @@ jobs:
             echo "Pull request is not merged."
             echo "::set-output name=pr_merged::false"
           fi
-
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+            node-version: 16
+            cache: yarn  
+        
       - name: Get Version from package.json
         id: get-version
         run: |
-            pwd  # Print the current working directory
-            find . -type f  # List all files in the current directory and subdirectories
-            TAG_VERSION=$(jq -r '.version' ./package.json)
+            TAG_VERSION=$(node get-version.js)
             echo "::set-output name=tag_version::$TAG_VERSION"
 
       - name: Extract Version Bump
