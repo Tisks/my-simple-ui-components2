@@ -103,9 +103,15 @@ jobs:
         id: changelog
         if: steps.pr-merged.outputs.pr_merged == 'true'
         run: |
-          node generate-changelog.js "${{ steps.get-version.outputs.tag_version }}" "${{ steps.new-version.outputs.new_tag_version }}"
+            CHANGELOG=$(node generate-changelog.js "${{ steps.get-version.outputs.tag_version }}" "${{ steps.new-version.outputs.new_tag_version }}")
+            echo "CHANGELOG: $CHANGELOG"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setting up Git
+        run: |
+            git config --global user.email "leiser.mahu@gmail.com"
+            git config --global user.name "Tisks"
 
       - name: Create Tag
         if: steps.pr-merged.outputs.pr_merged == 'true'
