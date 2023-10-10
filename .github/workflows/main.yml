@@ -1,4 +1,4 @@
-name: Check Checkbox Before Merge
+name: Check Version Checkbox
 
 on:
   pull_request:
@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
       - name: Check Checkbox
         id: checkbox
         run: |
@@ -20,11 +17,13 @@ jobs:
                             -H "Accept: application/vnd.github.v3+json" \
                             "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | grep -oP '(?<=\[x\]).*')
           
-          if [ -z "$PR_BODY" ]; then
-            echo "No checkbox is checked. Proceeding with merge."
-          else
-            echo "At least one checkbox is checked. Cannot merge."
+          # Count the number of checked checkboxes
+          CHECKED_COUNT=$(echo "$PR_BODY" | wc -l)
+          
+          if [ "$CHECKED_COUNT" -gt 1 ]; then
+            echo "There only can be one version checkbox checked at the time"
             exit 1
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
