@@ -1,4 +1,4 @@
-name: Create Comment on Pull Request
+name: Check Checkbox Before Merge
 
 on:
   pull_request:
@@ -6,20 +6,37 @@ on:
       - edited
 
 jobs:
-  create_comment:
+  check_checkbox:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Read Labels from labels.yml
-        id: read_labels
-        run: echo "::set-output name=labels::$(cat labels.yml)"
+      - name: Check Checkbox
+        id: checkbox
+        run: |
+          PR_BODY=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | jq -r '.body')
 
-      - name: Create Comment
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.createComment({ issue_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo, body: `you clicked sth` });
+          # Count the number of checked checkboxes
+          CHECKED_COUNT=$(echo "$PR_BODY" | grep -o '\[x\]' | wc -l)
+
+          if [ "$CHECKED_COUNT" -eq 0 ] || [ "$CHECKED_COUNT" -eq 1 ]; then
+            echo "Valid number of checkboxes checked."
+          else
+            echo "There can be only one checkbox checked of version bump at the time"
+            
+            # Set a status using actions/github-script
+            - name: Feedback
+              uses: actions/github-script@v6
+              with:
+                github-token: ${{ secrets.GITHUB_TOKEN }}
+                script: |
+                    github.rest.issues.createComment({ issue_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo, body: `There can be only one checkbox checked of version bump at the time` });
+            
+            exit 1
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
