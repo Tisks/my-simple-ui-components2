@@ -45,6 +45,8 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}")
 
+          echo "PR: $PR_BODY"
+
           # Use jq to extract the PR body
           PR_BODY_BODY=$(echo "$PR_BODY" | jq -r '.body')
 
