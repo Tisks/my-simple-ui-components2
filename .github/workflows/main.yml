@@ -16,26 +16,14 @@ jobs:
       - name: Check Checkbox
         id: checkbox
         run: |
-          PR_BODY=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | jq -r '.body')
+          PR_BODY=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | grep -oP '(?<=\[x\]).*')
           
-          # Count the number of checked checkboxes
-          CHECKED_COUNT=$(echo "$PR_BODY" | grep -o '\[x\]' | wc -l)
-
-          if [ "$CHECKED_COUNT" -eq 0 ] || [ "$CHECKED_COUNT" -eq 1 ]; then
-            echo "Valid number of checkboxes checked. Proceeding with merge."
+          if [ -z "$PR_BODY" ]; then
+            echo "No checkbox is checked. Proceeding with merge."
           else
-            echo "There can be only one checkbox checked of version bump at the time"
-            
-            # Set a status using actions/github-script
-            github.repos.createStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: github.sha,
-              state: "failure",
-              description: "There can be only one checkbox checked of version bump at the time",
-              context: "checkbox-validation"
-            });
-            
+            echo "At least one checkbox is checked. Cannot merge."
             exit 1
           fi
         env:
