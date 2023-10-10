@@ -20,20 +20,26 @@ jobs:
             echo "::set-output name=pr_merged::false"
           fi
 
-      - name: Extract Version Bump and Release Decision
+      - name: Get Version from package.json
+        id: get-version
+        run: |
+          TAG_VERSION=$(jq -r '.version' package.json)
+          echo "::set-output name=tag_version::${TAG_VERSION}"
+
+      - name: Extract Version Bump
         if: steps.pr-merged.outputs.pr_merged == 'true'
         id: extract-info
         run: |
           PR_BODY=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}")
-        
+
           echo "PR Body: $PR_BODY"  # Add this line to print the PR_BODY
 
           # Declare variables outside the conditional blocks
           VERSION_BUMP="Unknown"
           RELEASE_DECISION="Unknown"
-    
+
           # Extract the version bump type (Patch, Minor, or Major)
           if [[ "$PR_BODY" == *"[x]"* && "$PR_BODY" == *"Patch"* ]]; then
             VERSION_BUMP="Patch"
@@ -44,21 +50,34 @@ jobs:
           else
             VERSION_BUMP="Unknown"  # Default if none selected
           fi
-      
-          # Extract the release decision (Yes or No)
-          if [[ "$PR_BODY" == *"[x]"* && "$PR_BODY" == *"Yes"* ]]; then
-            RELEASE_DECISION="Yes"
-          elif [[ "$PR_BODY" == *"[x]"* && "$PR_BODY" == *"No"* ]]; then
-            RELEASE_DECISION="No"
-          else
-            RELEASE_DECISION="Unknown"  # Default if none selected
-          fi
-      
+
           echo "::set-output name=version_bump::$VERSION_BUMP"
-          echo "::set-output name=release_decision::$RELEASE_DECISION"
 
       - name: Use Extracted Information
         run: |
-            echo "Version Bump: ${{ steps.extract-info.outputs.version_bump }}"
-            echo "Release Decision: ${{ steps.extract-info.outputs.release_decision }}"
+          echo "Version Bump: ${{ steps.extract-info.outputs.version_bump }}"
+
+          CURRENT_VERSION="${{ steps.extract-info.outputs.version_bump }}"
+
+          NEW_VERSION="Unknown"
+
+          # Extract the major, minor, and patch components of the current version
+          MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
+          MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
+          PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
           
+          # Determine the ultimate TAG_VERSION based on VERSION_BUMP
+          if [[ "${{ steps.extract-info.outputs.version_bump }}" == "Patch" ]]; then
+            NEW_PATCH=$((PATCH + 1))
+            NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          elif [[ "${{ steps.extract-info.outputs.version_bump }}" == "Minor" ]]; then
+            NEW_MINOR=$((MINOR + 1))
+            NEW_VERSION="$MAJOR.$NEW_MINOR.0"
+          elif [[ "${{ steps.extract-info.outputs.version_bump }}" == "Major" ]]; then
+            NEW_MAJOR=$((MAJOR + 1))
+            NEW_VERSION="$NEW_MAJOR.0.0"
+          else
+            NEW_VERSION="Unknown"  # Default if none selected
+          fi
+          echo "NEW_VERSION: $NEW_VERSION"  # Add this line to print the NEW_VERSION
+          echo "::set-output name=new_tag_version::$NEW_VERSION"
