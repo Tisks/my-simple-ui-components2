@@ -24,7 +24,10 @@ jobs:
         if: steps.pr-merged.outputs.pr_merged == 'true'
         id: extract-info
         run: |
-          PR_BODY="${{ github.event.pull_request.body }}"
+          PR_BODY=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}")
+        
           echo "PR Body: $PR_BODY"  # Add this line to print the PR_BODY
 
           # Declare variables outside the conditional blocks
