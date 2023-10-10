@@ -1,0 +1,55 @@
+name: Publish to NPM
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  on_pull_request_merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR is merged
+        id: pr-merged
+        run: |
+          if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
+            echo "Pull request is merged."
+            echo "::set-output name=pr_merged::true"
+          else
+            echo "Pull request is not merged."
+            echo "::set-output name=pr_merged::false"
+          fi
+
+      - name: Extract Version Bump and Release Decision
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        id: extract-info
+        run: |
+            PR_BODY="${{ github.event.pull_request.body }}"
+            
+            # Extract the version bump type (Patch, Minor, or Major)
+            if [[ "$PR_BODY" =~ \[x\] Patch ]]; then
+              VERSION_BUMP="Patch"
+            elif [[ "$PR_BODY" =~ \[x\] Minor ]]; then
+              VERSION_BUMP="Minor"
+            elif [[ "$PR_BODY" =~ \[x\] Major ]]; then
+              VERSION_BUMP="Major"
+            else
+              VERSION_BUMP="Unknown"  # Default if none selected
+            fi
+        
+            # Extract the release decision (Yes or No)
+            if [[ "$PR_BODY" =~ \[x\] Yes ]]; then
+              RELEASE_DECISION="Yes"
+            elif [[ "$PR_BODY" =~ \[x\] No ]]; then
+              RELEASE_DECISION="No"
+            else
+              RELEASE_DECISION="Unknown"  # Default if none selected
+            fi
+        
+            echo "::set-output name=version_bump::$VERSION_BUMP"
+            echo "::set-output name=release_decision::$RELEASE_DECISION"
+      - name: Use Extracted Information
+        run: |
+            echo "Version Bump: ${{ steps.extract-info.outputs.version_bump }}"
+            echo "Release Decision: ${{ steps.extract-info.outputs.release_decision }}"
+          
