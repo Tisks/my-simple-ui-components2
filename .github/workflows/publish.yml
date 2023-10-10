@@ -23,7 +23,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
             node-version: 16
-            cache: yarn  
         
       - name: Get Version from package.json
         id: get-version
