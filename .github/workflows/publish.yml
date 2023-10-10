@@ -111,11 +111,40 @@ jobs:
           git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
           git push origin "v$TAG_VERSION"
 
-      - name: Install
-        run: yarn install --frozen-lockfile
-
-      - name: Build package
-        run: yarn build
+      - name: Read package.json
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        run: |
+          # Read the package.json file and store it in a variable
+          PACKAGE_JSON=$(<package.json)
+          echo "Current package.json content: $PACKAGE_JSON"
+          echo "::set-output name=package_json::$PACKAGE_JSON"
+  
+      - name: Update package version
+        id: update-version
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        run: |
+          # Extract the existing version from the package.json
+          CURRENT_VERSION="${{ steps.get-version.outputs.tag_version }}"
+  
+          # Replace this with your desired version string
+          NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
+  
+          # Update the version in package.json
+          sed -i "s/\"version\": \"$CURRENT_VERSION\"/\"version\": \"$NEW_VERSION\"/" package.json
+  
+      - name: Write updated package.json
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        run: |
+          # Write the updated package.json back to the file
+          echo "${{ steps.update-version.outputs.package_json }}" > package.json
+  
+      - name: Commit and push changes
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        run: |
+          NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
+          git add package.json
+          git commit -m "Update package version to $NEW_VERSION"
+          git push
 
       - name: Create Release
         if: steps.pr-merged.outputs.pr_merged == 'true'
@@ -133,6 +162,12 @@ jobs:
                 "generate_release_notes":true}')
 
           echo "RELEASE: $RELEASE"
+
+      - name: Install
+        run: yarn install --frozen-lockfile
+
+      - name: Build package
+        run: yarn build
 
       - name: Publish to NPM
         if: steps.pr-merged.outputs.pr_merged == 'true'
