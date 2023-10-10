@@ -24,8 +24,10 @@ jobs:
         if: steps.pr-merged.outputs.pr_merged == 'true'
         id: extract-info
         run: |
-            PR_BODY="${{ github.event.pull_request.body }}"
-            
+            PR_BODY=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | jq -r '.body')
+                    
             # Extract the version bump type (Patch, Minor, or Major)
             if [[ "$PR_BODY" =~ \[x\] Patch ]]; then
               VERSION_BUMP="Patch"
