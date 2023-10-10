@@ -111,22 +111,6 @@ jobs:
              git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
              git push origin "v$TAG_VERSION"
 
-      - name: Execute Changelog Script and Store in Variable
-        id: changelog
-        if: steps.pr-merged.outputs.pr_merged == 'true'
-        run: |
-
-            CHANGELOG_API=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Accept: application/vnd.github.v3+json" \
-                "${{ github.api_url }}/repos/${{ github.repository }}/releases/notes?commitish=master&tag_name=v${{ steps.new-version.outputs.new_tag_version }}&previous_tag_name=\"\"")
-
-            echo "CHANGELOG_API: $CHANGELOG_API"
-
-            CHANGELOG=$(node generate-changelog.js "${{ steps.get-version.outputs.tag_version }}" "${{ steps.new-version.outputs.new_tag_version }}")
-            echo "CHANGELOG: $CHANGELOG"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Install
         run: yarn install --frozen-lockfile
    
@@ -140,9 +124,8 @@ jobs:
         run: |
             TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
             gh release create "v$TAG_VERSION" ./* \
-            --title "v$TAG_VERSION" \
-            --notes CHANGELOG.md
-          
+            --title "v$TAG_VERSION" 
+                      
       - name: Publish to NPM
         if: steps.pr-merged.outputs.pr_merged == 'true'
         uses: JS-DevTools/npm-publish@v1
