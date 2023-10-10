@@ -51,11 +51,11 @@ jobs:
           RELEASE_DECISION="Unknown"
 
           # Extract the version bump type (Patch, Minor, or Major)
-          if [[ "$PR_BODY_BODY" == *"[x]"* && "$PR_BODY_BODY" == *"Patch"* ]]; then
+          if [[ "$PR_BODY_BODY" == *"[X]"* && "$PR_BODY_BODY" == *"Patch"* ]]; then
             VERSION_BUMP="Patch"
-          elif [[ "$PR_BODY_BODY" == *"[x]"* && "$PR_BODY_BODY" == *"Minor"* ]]; then
+          elif [[ "$PR_BODY_BODY" == *"[X]"* && "$PR_BODY_BODY" == *"Minor"* ]]; then
             VERSION_BUMP="Minor"
-          elif [[ "$PR_BODY_BODY" == *"[x]"* && "$PR_BODY_BODY" == *"Major"* ]]; then
+          elif [[ "$PR_BODY_BODY" == *"[X]"* && "$PR_BODY_BODY" == *"Major"* ]]; then
             VERSION_BUMP="Major"
           else
             VERSION_BUMP="Unknown"  # Default if none selected
