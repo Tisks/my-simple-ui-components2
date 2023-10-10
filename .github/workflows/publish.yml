@@ -122,14 +122,8 @@ jobs:
           NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
   
           # Update the version in package.json
-          sed -i "s/\"version\": \"$CURRENT_VERSION\"/\"version\": \"$NEW_VERSION\"/" package.json
-  
-      - name: Write updated package.json
-        if: steps.pr-merged.outputs.pr_merged == 'true'
-        run: |
-          # Write the updated package.json back to the file
-          echo "${{ steps.update-version.outputs.package_json }}" > package.json
-  
+          node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); packageJson.version = '${NEW_VERSION}'; fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));"
+
       - name: Commit and push changes
         if: steps.pr-merged.outputs.pr_merged == 'true'
         run: |
