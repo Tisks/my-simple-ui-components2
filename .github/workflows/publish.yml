@@ -99,15 +99,22 @@ jobs:
           echo "NEW_VERSION: $NEW_VERSION"  # Add this line to print the NEW_VERSION
           echo "::set-output name=new_tag_version::$NEW_VERSION"
 
+      - name: Setting up Git
+        run: |
+            git config --global user.email "leiser.mahu@gmail.com"
+            git config --global user.name "Tisks"
+  
+      - name: Create Tag
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        run: |
+             TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
+             git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
+             git push origin "v$TAG_VERSION"
+
       - name: Execute Changelog Script and Store in Variable
         id: changelog
         if: steps.pr-merged.outputs.pr_merged == 'true'
         run: |
-            TAG_CALL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Accept: application/vnd.github.v3+json" \
-                "${{ github.api_url }}/repos/${{ github.repository }}/tags/check?tag_name=v${{ steps.new-version.outputs.new_tag_version }}")
-
-            echo "TAG_CALL: $TAG_CALL"
 
             CHANGELOG_API=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                 -H "Accept: application/vnd.github.v3+json" \
@@ -119,18 +126,6 @@ jobs:
             echo "CHANGELOG: $CHANGELOG"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setting up Git
-        run: |
-            git config --global user.email "leiser.mahu@gmail.com"
-            git config --global user.name "Tisks"
-
-      - name: Create Tag
-        if: steps.pr-merged.outputs.pr_merged == 'true'
-        run: |
-           TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
-           git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
-           git push origin "v$TAG_VERSION"
 
       - name: Install
         run: yarn install --frozen-lockfile
@@ -154,7 +149,3 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}  # Make sure you have an NPM token set as a secret
 
-      - name: Delete Changelog
-        if: steps.pr-merged.outputs.pr_merged == 'true'
-        run: |
-          rm CHANGELOG.md
