@@ -4,7 +4,7 @@
   "repository": "my-simple-ui-components2",
   "description": "A simple template for a custom React component library",
   "scripts": {
-    "build": "node ./utils.js && rollup -c",
+    "build": "node ./utils.js && rollup -c && true",
     "test": "jest",
     "clean-install": "rm -rf ./dist ./node_modules yarn.lock && yarn"
   },
