@@ -22,7 +22,7 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
-        
+
       - name: Setup node
         if: steps.pr-merged.outputs.pr_merged == 'true'
         uses: actions/setup-node@v3
@@ -101,62 +101,65 @@ jobs:
 
       - name: Setting up Git
         run: |
-            git config --global user.email "leiser.mahu@gmail.com"
-            git config --global user.name "Tisks"
-  
+          git config --global user.email "leiser.mahu@gmail.com"
+          git config --global user.name "Tisks"
+
       - name: Create Tag
         if: steps.pr-merged.outputs.pr_merged == 'true'
         run: |
-             TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
-             git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
-             git push origin "v$TAG_VERSION"
+          TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
+          git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
+          git push origin "v$TAG_VERSION"
 
       - name: Execute Changelog Script and Store in Variable
         id: changelog
         if: steps.pr-merged.outputs.pr_merged == 'true'
         run: |
 
-            CHANGELOG=$(curl -L \
-                -X POST \
-                -H "Accept: application/vnd.github+json" \
-                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                "${{ github.api_url }}/repos/${{ github.repository }}/releases/generate-notes" \
-                -d '{"tag_name":"v${{ steps.new-version.outputs.new_tag_version }}","target_commitish":"main","previous_tag_name":"", "configuration_file_path":""}')
+          CHANGELOG=$(curl -L \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              "${{ github.api_url }}/repos/${{ github.repository }}/releases/generate-notes" \
+              -d '{"tag_name":"v${{ steps.new-version.outputs.new_tag_version }}","target_commitish":"main","previous_tag_name":"", "configuration_file_path":""}')
 
-            echo "CHANGELOG: $CHANGELOG"
-            # Use jq to extract the PR body
-            CHANGELOG_BODY=$(echo "$CHANGELOG" | jq -r '.body')
+          # Use jq to extract the PR body
+          CHANGELOG_BODY=$(echo "$CHANGELOG" | jq -r '.body')
 
-            echo "::set-output name=changelog::$CHANGELOG_BODY"
+          echo "CHANGELOG: $CHANGELOG_BODY"
+
+          echo "::set-output name=changelog::$CHANGELOG_BODY"
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install
         run: yarn install --frozen-lockfile
-   
+
       - name: Build package
         run: yarn build
 
       - name: Create Release
         if: steps.pr-merged.outputs.pr_merged == 'true'
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-            curl -L \
-                -X POST \
-                -H "Accept: application/vnd.github+json" \
-                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                "${{ github.api_url }}/repos/${{ github.repository }}/releases" \
-                -d '{"tag_name":"v${{ steps.new-version.outputs.new_tag_version }}", "name":"v${{ steps.new-version.outputs.new_tag_version }}",
-                    "body":"${{ steps.changelog.outputs.changelog }}",
-                    "draft":false,
-                    "prerelease":false,
-                    "generate_release_notes":false}'
-          
+          RELEASE=$(curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "${{ github.api_url }}/repos/${{ github.repository }}/releases" \
+            -d '{"tag_name":"v${{ steps.new-version.outputs.new_tag_version }}", "name":"v${{ steps.new-version.outputs.new_tag_version }}",
+                "body":"${{ steps.changelog.outputs.changelog }}",
+                "draft":false,
+                "prerelease":false,
+                "generate_release_notes":false}')
+
+          echo "RELEASE: $RELEASE"
+
       - name: Publish to NPM
         if: steps.pr-merged.outputs.pr_merged == 'true'
         uses: JS-DevTools/npm-publish@v1
         with:
-          token: ${{ secrets.NPM_TOKEN }}  # Make sure you have an NPM token set as a secret
+          token: ${{ secrets.NPM_TOKEN }} # Make sure you have an NPM token set as a secret
 
