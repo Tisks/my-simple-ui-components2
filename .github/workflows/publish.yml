@@ -150,10 +150,9 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "${{ github.api_url }}/repos/${{ github.repository }}/releases" \
             -d '{"tag_name":"v${{ steps.new-version.outputs.new_tag_version }}", "name":"v${{ steps.new-version.outputs.new_tag_version }}",
-                "body":"${{ steps.changelog.outputs.changelog }}",
                 "draft":false,
                 "prerelease":false,
-                "generate_release_notes":false}')
+                "generate_release_notes":true}')
 
           echo "RELEASE: $RELEASE"
 
