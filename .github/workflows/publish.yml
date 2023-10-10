@@ -105,7 +105,7 @@ jobs:
         run: |
             TAG_CALL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                 -H "Accept: application/vnd.github.v3+json" \
-                "${{ github.api_url }}/repos/${{ github.repository }}/tags/check?tag_name=${{ steps.new-version.outputs.new_tag_version }}")
+                "${{ github.api_url }}/repos/${{ github.repository }}/tags/check?tag_name=v${{ steps.new-version.outputs.new_tag_version }}")
 
             echo "TAG_CALL: $TAG_CALL"
 
