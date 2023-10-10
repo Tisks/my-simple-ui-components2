@@ -8,5 +8,5 @@ Please check the type of version bump:
 - [ ] Major
 
 Do create a new release of the library? 
-- [ ] Yes
+- [X] Yes
 - [ ] No
