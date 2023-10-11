@@ -36,6 +36,7 @@ jobs:
           TAG_VERSION=$(./utils.sh get_tag_version 'package.json')
           TAG_VERSION_STORYBOOK=$(./utils.sh get_tag_version './storybook/package.json')
           echo "TAG_VERSION Body: $TAG_VERSION"
+          echo "TAG_VERSION_STORYBOOK Body: $TAG_VERSION_STORYBOOK"
           echo "::set-output name=tag_version::$TAG_VERSION"
           echo "::set-output name=tag_version_storybook::$TAG_VERSION_STORYBOOK"
 
