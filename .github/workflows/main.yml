@@ -1,4 +1,4 @@
-name: Check Version Checkbox
+name: Comment version bump options
 
 on:
   pull_request:
