@@ -44,6 +44,8 @@ determine_new_version() {
 # Function to get TAG_VERSION from a JSON file
 get_tag_version() {
   local JSON_FILE="$1"
+  
+  echo "$JSON_FILE"
 
   local TAG_VERSION=$(node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('$JSON_FILE')); console.log(packageJson.version);")
 
