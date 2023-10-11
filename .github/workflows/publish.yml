@@ -42,26 +42,23 @@ jobs:
         id: extract-info
         run: |
 
-          PR_BODY=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          GITHUB_BOT_COMMENT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}")
+            "${{ github.api_url }}/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments")
 
-          echo "PR: $PR_BODY"
+          VERSION_CHECKBOXES=$(echo "$GITHUB_BOT_COMMENT" | jq '.[] | select(.user.login == "github-actions[bot]") | .body')
 
-          # Use jq to extract the PR body
-          PR_BODY_BODY=$(echo "$PR_BODY" | jq -r '.body')
-
-          echo "PR Body: $PR_BODY_BODY"
+          echo "VERSION_CHECKBOXES: $VERSION_CHECKBOXES"
 
           # Declare variables outside the conditional blocks
           VERSION_BUMP="Unknown"
 
           # Extract the version bump type (Patch, Minor, or Major)
-          if [[ "$PR_BODY_BODY" == *"[X]"* && "$PR_BODY_BODY" == *"Patch"* ]]; then
+          if [[ "$VERSION_CHECKBOXES" == *"[X]"* && "$VERSION_CHECKBOXES" == *"Patch"* ]]; then
             VERSION_BUMP="Patch"
-          elif [[ "$PR_BODY_BODY" == *"[X]"* && "$PR_BODY_BODY" == *"Minor"* ]]; then
+          elif [[ "$VERSION_CHECKBOXES" == *"[X]"* && "$VERSION_CHECKBOXES" == *"Minor"* ]]; then
             VERSION_BUMP="Minor"
-          elif [[ "$PR_BODY_BODY" == *"[X]"* && "$PR_BODY_BODY" == *"Major"* ]]; then
+          elif [[ "$VERSION_CHECKBOXES" == *"[X]"* && "$VERSION_CHECKBOXES" == *"Major"* ]]; then
             VERSION_BUMP="Major"
           else
             VERSION_BUMP="Unknown"  # Default if none selected
