@@ -9,7 +9,7 @@
     "test": "jest",
     "test:cov": "yarn test --coverage .",
     "clean-install": "rm -rf ./dist ./node_modules yarn.lock && yarn",
-    "clean-build": "yarn clean-install && yarn build",
+    "clean-build": "yarn clean-install && yarn build && true",
     "clean-storybook-install": "yarn clean-install && cd storybook && yarn clean-install"
   },
   "dependencies": {
