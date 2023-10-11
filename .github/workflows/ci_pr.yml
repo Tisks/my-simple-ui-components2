@@ -1,14 +1,14 @@
 name: CI (push)
 
 on:
-    pull_request:
-        types:
-            - opened
-            - synchronize
+  pull_request:
+    types:
+      - opened
+      - synchronize
 
 jobs:
   build:
-    name: test
+    name: jest test
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
