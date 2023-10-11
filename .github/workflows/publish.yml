@@ -29,6 +29,9 @@ jobs:
         with:
           node-version: 16
 
+      - name: Grant execute permission to utils.sh
+        run: chmod +x utils.sh
+        
       - name: Get Version from package.json
         if: steps.pr-merged.outputs.pr_merged == 'true'
         id: get-version
