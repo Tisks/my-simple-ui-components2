@@ -33,7 +33,7 @@ jobs:
         if: steps.pr-merged.outputs.pr_merged == 'true'
         id: get-version
         run: |
-          TAG_VERSION=$(node get-version.js)
+          TAG_VERSION=$(node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); console.log(packageJson.version);")
           echo "TAG_VERSION Body: $TAG_VERSION"
           echo "::set-output name=tag_version::$TAG_VERSION"
 
