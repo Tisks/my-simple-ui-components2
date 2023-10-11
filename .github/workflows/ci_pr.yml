@@ -3,6 +3,7 @@ name: CI (push)
 on:
     pull_request:
         types:
+            - opened
             - synchronize
 
 jobs:
