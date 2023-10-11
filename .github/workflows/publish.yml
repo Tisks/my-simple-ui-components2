@@ -41,7 +41,7 @@ jobs:
         if: steps.pr-merged.outputs.pr_merged == 'true'
         id: extract-info
         run: |
-
+  
           GITHUB_BOT_COMMENT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             "${{ github.api_url }}/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments")
@@ -50,22 +50,42 @@ jobs:
 
           echo "VERSION_CHECKBOXES: $VERSION_CHECKBOXES"
 
+          if [ -z "$VERSION_CHECKBOXES" ]; then
+            echo "No valid comments found. Exiting workflow."
+            exit 0
+          fi
+        
+          # Extract version bump text for package and storybook
+          PACKAGE_VERSION=$(echo "$VERSION_CHECKBOXES" | grep -oP '(?<=Please check the type of version bump:)[^\n]*')
+          STORYBOOK_VERSION=$(echo "$VERSION_CHECKBOXES" | grep -oP '(?<=the other one that states '\''storybook'\'':)[^\n]*')
+
+          echo "PACKAGE_VERSION: $PACKAGE_VERSION"
+          echo "STORYBOOK_VERSION: $STORYBOOK_VERSION"
+
           # Declare variables outside the conditional blocks
-          VERSION_BUMP="Unknown"
+          PACKAGE_BUMP="Unknown"
+          STORYBOOK_BUMP="Unknown"
 
           # Extract the version bump type (Patch, Minor, or Major)
-          if [[ "$VERSION_CHECKBOXES" == *"[X]"* && "$VERSION_CHECKBOXES" == *"Patch"* ]]; then
-            VERSION_BUMP="Patch"
-          elif [[ "$VERSION_CHECKBOXES" == *"[X]"* && "$VERSION_CHECKBOXES" == *"Minor"* ]]; then
-            VERSION_BUMP="Minor"
-          elif [[ "$VERSION_CHECKBOXES" == *"[X]"* && "$VERSION_CHECKBOXES" == *"Major"* ]]; then
-            VERSION_BUMP="Major"
-          else
-            VERSION_BUMP="Unknown"  # Default if none selected
+          if [[ "$PACKAGE_VERSION" == *"[X]"* && "$PACKAGE_VERSION" == *"Patch"* ]]; then
+            PACKAGE_BUMP="Patch"
+          elif [[ "$PACKAGE_VERSION" == *"[X]"* && "$PACKAGE_VERSION" == *"Minor"* ]]; then
+            PACKAGE_BUMP="Minor"
+          elif [[ "$PACKAGE_VERSION" == *"[X]"* && "$PACKAGE_VERSION" == *"Major"* ]]; then
+            PACKAGE_BUMP="Major"
           fi
 
-          echo "::set-output name=version_bump::$VERSION_BUMP"
+          if [[ "$STORYBOOK_VERSION" == *"[X]"* && "$STORYBOOK_VERSION" == *"Patch"* ]]; then
+            STORYBOOK_BUMP="Patch"
+          elif [[ "$STORYBOOK_VERSION" == *"[X]"* && "$STORYBOOK_VERSION" == *"Minor"* ]]; then
+            STORYBOOK_BUMP="Minor"
+          elif [[ "$STORYBOOK_VERSION" == *"[X]"* && "$STORYBOOK_VERSION" == *"Major"* ]]; then
+            STORYBOOK_BUMP="Major"
+          fi
 
+          echo "::set-output name=version_bump::$PACKAGE_BUMP"
+          echo "::set-output name=storybook_bump::$STORYBOOK_BUMP"
+  
       - name: Determine new version
         id: new-version
         if: steps.pr-merged.outputs.pr_merged == 'true'
