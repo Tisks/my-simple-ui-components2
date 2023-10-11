@@ -1,0 +1,37 @@
+name: CI (push)
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js 16
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    - name: Restore node modules cache
+      uses: actions/cache@v3
+      env:
+          cache-name: cache-node-modules
+      with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+
+    - name: Install dependencies
+      run: yarn install --prefer-offline --frozen-lockfile
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Tests
+      run: yarn test:cov
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
