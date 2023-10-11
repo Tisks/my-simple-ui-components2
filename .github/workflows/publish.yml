@@ -33,8 +33,8 @@ jobs:
         if: steps.pr-merged.outputs.pr_merged == 'true'
         id: get-version
         run: |
-          TAG_VERSION=$(./util.sh get_tag_version 'package.json')
-          TAG_VERSION_STORYBOOK=$(./util.sh get_tag_version './storybook/package.json')
+          TAG_VERSION=$(./utils.sh get_tag_version 'package.json')
+          TAG_VERSION_STORYBOOK=$(./utils.sh get_tag_version './storybook/package.json')
           echo "TAG_VERSION Body: $TAG_VERSION"
           echo "::set-output name=tag_version::$TAG_VERSION"
           echo "::set-output name=tag_version_storybook::$TAG_VERSION_STORYBOOK"
@@ -62,8 +62,8 @@ jobs:
           echo "PACKAGE_VERSION: $PACKAGE_VERSION"
           echo "STORYBOOK_VERSION: $STORYBOOK_VERSION"
 
-          PACKAGE_BUMP=$(./util.sh extract_version_bump "$PACKAGE_VERSION")
-          STORYBOOK_BUMP=$(./util.sh extract_version_bump "$STORYBOOK_VERSION")
+          PACKAGE_BUMP=$(./utils.sh extract_version_bump "$PACKAGE_VERSION")
+          STORYBOOK_BUMP=$(./utils.sh extract_version_bump "$STORYBOOK_VERSION")
 
           echo "::set-output name=version_bump::$PACKAGE_BUMP"
           echo "::set-output name=storybook_bump::$STORYBOOK_BUMP"
@@ -79,10 +79,10 @@ jobs:
           echo "Actual version storybook: ${{ steps.get-version.outputs.tag_version_storybook }}"
 
           CURRENT_VERSION="${{ steps.get-version.outputs.tag_version }}"
-          NEW_VERSION=$(./util.sh determine_new_version "${{ steps.extract-info.outputs.version_bump }}" "$CURRENT_VERSION")
+          NEW_VERSION=$(./utils.sh determine_new_version "${{ steps.extract-info.outputs.version_bump }}" "$CURRENT_VERSION")
 
           CURRENT_VERSION_STORYBOOK="${{ steps.get-version.outputs.tag_version_storybook }}"
-          NEW_VERSION_STORYBOOK=$(./util.sh determine_new_version "${{ steps.extract-info.outputs.storybook_bump }}" "$CURRENT_VERSION_STORYBOOK")
+          NEW_VERSION_STORYBOOK=$(./utils.sh determine_new_version "${{ steps.extract-info.outputs.storybook_bump }}" "$CURRENT_VERSION_STORYBOOK")
 
           echo "NEW_VERSION: $NEW_VERSION"
           echo "NEW_VERSION_STORYBOOK: $NEW_VERSION_STORYBOOK"
@@ -108,11 +108,11 @@ jobs:
         run: |
           CURRENT_VERSION="${{ steps.get-version.outputs.tag_version }}"
           NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
-          ./util.sh update_version 'package.json' "$NEW_VERSION"
+          ./utils.sh update_version 'package.json' "$NEW_VERSION"
 
           CURRENT_VERSION="${{ steps.get-version.outputs.tag_version_storybook }}"
           NEW_VERSION="${{ steps.new-version.outputs.new_tag_version_storybook }}"
-          ./util.sh update_version './storybook/package.json' "$NEW_VERSION"
+          ./utils.sh update_version './storybook/package.json' "$NEW_VERSION"
 
       - name: Commit and push changes
         if: steps.pr-merged.outputs.pr_merged == 'true'
