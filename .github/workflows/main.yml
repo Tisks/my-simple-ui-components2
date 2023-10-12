@@ -7,6 +7,7 @@ on:
 
 jobs:
   comment:
+    name: Version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v6
@@ -16,6 +17,6 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Please check the type of version bump: \n - [X] Patch \n - [ ] Minor \n - [ ] Major \n\n Please check the type of version bump of the storybook \n (normally the same as the whole package but can differ due to new addons, features or whole update): \n - [X] Patch \n - [ ] Minor \n - [ ] Major'
+              body: 'Please check the type of version bump: \n - [X] Patch \n - [ ] Minor \n - [ ] Major \n\n'
             })
 
