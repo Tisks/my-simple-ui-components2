@@ -43,12 +43,17 @@
     "postcss-modules": "^6.0.0",
     "rollup": "^3.29.4",
     "rollup-plugin-dts": "^6.0.2",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.1",
     "rollup-plugin-sass": "^1.12.20",
     "sass": "^1.68.0",
     "ts-jest": "^29.1.1",
     "tslib": "^2.6.2",
     "typescript": "^4.9.5"
+  },
+  "peerDependencies": {
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
   },
   "main": "dist/index.js",
   "module": "dist/index.esm.js",

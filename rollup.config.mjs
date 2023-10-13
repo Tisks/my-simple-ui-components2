@@ -3,6 +3,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import dts from "rollup-plugin-dts";
 import postcss from "rollup-plugin-postcss";
+import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
 import packageJson from "./package.json" assert { type: "json" };
 
@@ -14,14 +15,26 @@ export default [
         file: packageJson.main,
         format: "cjs",
         sourcemap: true,
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM',
+          // Add other globals as needed
+        },
       },
       {
         file: packageJson.module,
         format: "esm",
         sourcemap: true,
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM',
+          // Add other globals as needed
+        },
       },
     ],
+    external: ['react', 'react-dom'], // Specify the external dependencies
     plugins: [
+      peerDepsExternal(), // Externalize peer dependencies
       resolve(),
       commonjs(),
       typescript({ tsconfig: "./tsconfig.json" }),
