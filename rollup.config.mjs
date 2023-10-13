@@ -26,15 +26,15 @@ export default [
       commonjs(),
       typescript({ tsconfig: "./tsconfig.json" }),
       postcss({
-        modules: true, // Enable CSS modules
-        extract: true, // Extract CSS to a separate file
-        minimize: true, // Minimize the CSS
-        extensions: [".scss", ".css"], // Specify the file extensions to process
+        modules: true,
+        extract: true,
+        minimize: true,
+        extensions: [".scss", ".css"],
       }),
     ],
   },
   {
-    input: "dist/esm/types/index.d.ts",
+    input: "dist/types/index.d.ts",
     output: [{ file: "dist/index.d.ts", format: "esm" }],
     plugins: [dts()],
     external: [/\.scss$/, /\.css$/, /^wtw-ui-components/],
