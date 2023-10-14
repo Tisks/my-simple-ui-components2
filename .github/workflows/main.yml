@@ -7,7 +7,7 @@ on:
 
 jobs:
   comment:
-    name: Version
+    name: version bump comment
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v6
@@ -17,6 +17,6 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Please check the type of version bump: \n - [X] Patch \n - [ ] Minor \n - [ ] Major \n\n'
+              body: 'Please check the type of version bump: \n - [X] Patch \n - [ ] Minor \n - [ ] Major'
             })
 
