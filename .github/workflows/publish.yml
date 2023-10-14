@@ -125,6 +125,7 @@ jobs:
       - name: Commit and push changes
         run: |
           NEW_VERSION="${{ needs.set_up_new_version.outputs.new_tag_version }}"
+          echo "Update package version to $NEW_VERSION"
           git add package.json
           git commit -m "Update package version to $NEW_VERSION"
           git push
