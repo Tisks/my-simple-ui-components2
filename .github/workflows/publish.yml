@@ -107,7 +107,7 @@ jobs:
       - name: Setting up Git
         run: |
           git config --global user.email "leiser.mahu@gmail.com"
-          git config --global user.name “Tisks"
+          git config --global user.name "Tisks"
 
       - name: Commit and push changes
         run: |
