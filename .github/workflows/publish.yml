@@ -147,4 +147,4 @@ jobs:
       - name: Publish to NPM
         uses: JS-DevTools/npm-publish@v1
         with:
-          token: ${{ secrets.WTW_NPM_TOKEN }} # Make sure you have an NPM token set as a secret
+          token: ${{ secrets.NPM_TOKEN }} # Make sure you have an NPM token set as a secret
