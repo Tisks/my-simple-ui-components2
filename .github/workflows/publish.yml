@@ -6,13 +6,13 @@ on:
       - closed
 
 jobs:
-  set_up_new_version:
-    name: Set up new version
+  publish_to_npm:
+    name: Update package.json, create release, and publish to npm
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Setup node
         uses: actions/setup-node@v3
@@ -39,7 +39,7 @@ jobs:
 
           if [ -z "$VERSION_CHECKBOXES" ]; then
             echo "No valid comments found. Exiting workflow."
-            exit 1
+            exit 0
           fi
 
           # Declare variables outside the conditional blocks
@@ -48,11 +48,11 @@ jobs:
           # Convert the version checkboxes to lowercase and then check for "[x]" or "[X]"
           VERSION_CHECKBOXES_LOWER=$(echo "$VERSION_CHECKBOXES" | tr '[:upper:]' '[:lower:]')
 
-          if [[ "$VERSION_CHECKBOXES_LOWER" == *"[x]"* && "$VERSION_CHECKBOXES_LOWER" == *"patch"* ]]; then
+          if [[ "$VERSION_CHECKBOXES_LOWER" == *"["x"]"* && "$VERSION_CHECKBOXES_LOWER" == *"patch"* ]]; then
             VERSION_BUMP="Patch"
-          elif [[ "$VERSION_CHECKBOXES_LOWER" == *"[x]"* && "$VERSION_CHECKBOXES_LOWER" == *"minor"* ]]; then
+          elif [[ "$VERSION_CHECKBOXES_LOWER" == *"["x"]"* && "$VERSION_CHECKBOXES_LOWER" == *"minor"* ]]; then
             VERSION_BUMP="Minor"
-          elif [[ "$VERSION_CHECKBOXES_LOWER" == *"[x]"* && "$VERSION_CHECKBOXES_LOWER" == *"major"* ]]; then
+          elif [[ "$VERSION_CHECKBOXES_LOWER" == *"["x"]"* && "$VERSION_CHECKBOXES_LOWER" == *"major"* ]]; then
             VERSION_BUMP="Major"
           else
             VERSION_BUMP="Unknown"  # Default if none selected
@@ -90,37 +90,35 @@ jobs:
             NEW_VERSION="Unknown"  # Default if none selected
           fi
           echo "NEW_VERSION: $NEW_VERSION"  # Add this line to print the NEW_VERSION
-          echo "$NEW_VERSION" > new_version.txt
+          echo "::set-output name=new_tag_version::$NEW_VERSION"
 
-  create_release:
-    name: Create release
-    runs-on: ubuntu-latest
-    needs: set_up_new_version
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
+      - name: Update package version
+        id: update-version
+        run: |
+          # Extract the existing version from the package.json
+          CURRENT_VERSION="${{ steps.get-version.outputs.tag_version }}"
+  
+          # Replace this with your desired version string
+          NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
+  
+          # Update the version in package.json
+          node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); packageJson.version = '${NEW_VERSION}'; fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));"
 
       - name: Setting up Git
         run: |
           git config --global user.email "leiser.mahu@gmail.com"
-          git config --global user.name "Tisks"
+          git config --global user.name “Tisks"
 
       - name: Commit and push changes
         run: |
-          NEW_VERSION=$(cat new_version.txt)
-          echo "Update package version to $NEW_VERSION"
+          NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
           git add package.json
           git commit -m "Update package version to $NEW_VERSION"
           git push
 
       - name: Create Tag
         run: |
-          TAG_VERSION=$(cat new_version.txt)
+          TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
           git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
           git push origin "v$TAG_VERSION"
 
@@ -128,31 +126,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          NEW_VERSION=$(cat new_version.txt)
           RELEASE=$(curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "${{ github.api_url }}/repos/${{ github.repository }}/releases" \
-            -d '{"tag_name":"v'$NEW_VERSION'", "name":"v'$NEW_VERSION'",
+            -d '{"tag_name":"v${{ steps.new-version.outputs.new_tag_version }}", "name":"v${{ steps.new-version.outputs.new_tag_version }}",
                 "draft":false,
                 "prerelease":false,
                 "generate_release_notes":true}')
 
           echo "RELEASE: $RELEASE"
-
-  publish_to_npm:
-    name: Publish to npm
-    runs-on: ubuntu-latest
-    needs: set_up_new_version
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
 
       - name: Install
         run: yarn install --frozen-lockfile
@@ -163,4 +147,4 @@ jobs:
       - name: Publish to NPM
         uses: JS-DevTools/npm-publish@v1
         with:
-          token: ${{ secrets.NPM_TOKEN }}
+          token: ${{ secrets.WTW_NPM_TOKEN }} # Make sure you have an NPM token set as a secret
