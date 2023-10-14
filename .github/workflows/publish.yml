@@ -57,6 +57,7 @@ jobs:
           else
             VERSION_BUMP="Unknown"  # Default if none selected
           fi
+          echo "VERSION_BUMP: $VERSION_BUMP"  # Add this line to print the VERSION_BUMP
 
           echo "::set-output name=version_bump::$VERSION_BUMP"
 
