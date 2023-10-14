@@ -1,4 +1,4 @@
-name: Publish to NPM
+name: Create release and publish to npm
 
 on:
   pull_request:
@@ -6,8 +6,8 @@ on:
       - closed
 
 jobs:
-  on_pull_request_merge:
-    name: Publish
+  publish_to_npm:
+    name: Update package.json, create release and publish to npm
     runs-on: ubuntu-latest
     steps:
       - name: Check if PR is merged
@@ -30,24 +30,19 @@ jobs:
         with:
           node-version: 16
 
-      - name: Grant execute permission to utils.sh
-        run: chmod +x utils.sh
-        
       - name: Get Version from package.json
         if: steps.pr-merged.outputs.pr_merged == 'true'
         id: get-version
         run: |
-          TAG_VERSION=$(./utils.sh get_tag_version 'package.json')
-          TAG_VERSION_STORYBOOK=$(./utils.sh get_tag_version './storybook/package.json')
+          TAG_VERSION=$(node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); console.log(packageJson.version);")
           echo "TAG_VERSION Body: $TAG_VERSION"
-          echo "TAG_VERSION_STORYBOOK Body: $TAG_VERSION_STORYBOOK"
           echo "::set-output name=tag_version::$TAG_VERSION"
-          echo "::set-output name=tag_version_storybook::$TAG_VERSION_STORYBOOK"
 
       - name: Extract Version Bump
         if: steps.pr-merged.outputs.pr_merged == 'true'
         id: extract-info
         run: |
+
           GITHUB_BOT_COMMENT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             "${{ github.api_url }}/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments")
@@ -60,18 +55,22 @@ jobs:
             echo "No valid comments found. Exiting workflow."
             exit 0
           fi
-        
-          PACKAGE_VERSION=$(echo "$VERSION_CHECKBOXES" | grep -oP '(?<=Please check the type of version bump:)[^\n]*')
-          STORYBOOK_VERSION=$(echo "$VERSION_CHECKBOXES" | grep -oP '(?<=the other one that states '\''storybook'\'':)[^\n]*')
 
-          echo "PACKAGE_VERSION: $PACKAGE_VERSION"
-          echo "STORYBOOK_VERSION: $STORYBOOK_VERSION"
+          # Declare variables outside the conditional blocks
+          VERSION_BUMP="Unknown"
 
-          PACKAGE_BUMP=$(./utils.sh extract_version_bump "$PACKAGE_VERSION")
-          STORYBOOK_BUMP=$(./utils.sh extract_version_bump "$STORYBOOK_VERSION")
+          # Extract the version bump type (Patch, Minor, or Major)
+          if [[ "$VERSION_CHECKBOXES" == *"[x]"* && "$VERSION_CHECKBOXES" == *"Patch"* ]]; then
+            VERSION_BUMP="Patch"
+          elif [[ "$VERSION_CHECKBOXES" == *"[x]"* && "$VERSION_CHECKBOXES" == *"Minor"* ]]; then
+            VERSION_BUMP="Minor"
+          elif [[ "$VERSION_CHECKBOXES" == *"[x]"* && "$VERSION_CHECKBOXES" == *"Major"* ]]; then
+            VERSION_BUMP="Major"
+          else
+            VERSION_BUMP="Unknown"  # Default if none selected
+          fi
 
-          echo "::set-output name=version_bump::$PACKAGE_BUMP"
-          echo "::set-output name=storybook_bump::$STORYBOOK_BUMP"
+          echo "::set-output name=version_bump::$VERSION_BUMP"
 
       - name: Determine new version
         id: new-version
@@ -80,20 +79,52 @@ jobs:
           echo "Version Bump: ${{ steps.extract-info.outputs.version_bump }}"
           echo "Actual version: ${{ steps.get-version.outputs.tag_version }}"
 
-          echo "Version Bump storybook: ${{ steps.extract-info.outputs.storybook_bump }}"
-          echo "Actual version storybook: ${{ steps.get-version.outputs.tag_version_storybook }}"
-
           CURRENT_VERSION="${{ steps.get-version.outputs.tag_version }}"
-          NEW_VERSION=$(./utils.sh determine_new_version "${{ steps.extract-info.outputs.version_bump }}" "$CURRENT_VERSION")
 
-          CURRENT_VERSION_STORYBOOK="${{ steps.get-version.outputs.tag_version_storybook }}"
-          NEW_VERSION_STORYBOOK=$(./utils.sh determine_new_version "${{ steps.extract-info.outputs.storybook_bump }}" "$CURRENT_VERSION_STORYBOOK")
+          NEW_VERSION="Unknown"
 
-          echo "NEW_VERSION: $NEW_VERSION"
-          echo "NEW_VERSION_STORYBOOK: $NEW_VERSION_STORYBOOK"
+          # Split the current version into its components
+          IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
+          MAJOR="${VERSION_PARTS[0]}"
+          MINOR="${VERSION_PARTS[1]}"
+          PATCH="${VERSION_PARTS[2]}"
 
+          # Determine the ultimate TAG_VERSION based on VERSION_BUMP
+          if [[ "${{ steps.extract-info.outputs.version_bump }}" == "Patch" ]]; then
+            NEW_PATCH=$((PATCH + 1))
+            NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          elif [[ "${{ steps.extract-info.outputs.version_bump }}" == "Minor" ]]; then
+            NEW_MINOR=$((MINOR + 1))
+            NEW_VERSION="$MAJOR.$NEW_MINOR.0"
+          elif [[ "${{ steps.extract-info.outputs.version_bump }}" == "Major" ]]; then
+            NEW_MAJOR=$((MAJOR + 1))
+            NEW_VERSION="$NEW_MAJOR.0.0"
+          else
+            NEW_VERSION="Unknown"  # Default if none selected
+          fi
+          echo "NEW_VERSION: $NEW_VERSION"  # Add this line to print the NEW_VERSION
           echo "::set-output name=new_tag_version::$NEW_VERSION"
-          echo "::set-output name=new_tag_version_storybook::$NEW_VERSION_STORYBOOK"
+
+      - name: Update package version
+        id: update-version
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        run: |
+          # Extract the existing version from the package.json
+          CURRENT_VERSION="${{ steps.get-version.outputs.tag_version }}"
+  
+          # Replace this with your desired version string
+          NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
+  
+          # Update the version in package.json
+          node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); packageJson.version = '${NEW_VERSION}'; fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));"
+
+      - name: Commit and push changes
+        if: steps.pr-merged.outputs.pr_merged == 'true'
+        run: |
+          NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
+          git add package.json
+          git commit -m "Update package version to $NEW_VERSION"
+          git push
 
       - name: Setting up Git
         run: |
@@ -106,26 +137,6 @@ jobs:
           TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
           git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
           git push origin "v$TAG_VERSION"
-  
-      - name: Update package version
-        id: update-version
-        if: steps.pr-merged.outputs.pr_merged == 'true'
-        run: |
-          CURRENT_VERSION="${{ steps.get-version.outputs.tag_version }}"
-          NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
-          ./utils.sh update_version 'package.json' "$NEW_VERSION"
-
-          CURRENT_VERSION="${{ steps.get-version.outputs.tag_version_storybook }}"
-          NEW_VERSION="${{ steps.new-version.outputs.new_tag_version_storybook }}"
-          ./utils.sh update_version './storybook/package.json' "$NEW_VERSION"
-
-      - name: Commit and push changes
-        if: steps.pr-merged.outputs.pr_merged == 'true'
-        run: |
-          NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
-          git add package.json
-          git commit -m "Update package version to $NEW_VERSION"
-          git push
 
       - name: Create Release
         if: steps.pr-merged.outputs.pr_merged == 'true'
@@ -154,4 +165,5 @@ jobs:
         if: steps.pr-merged.outputs.pr_merged == 'true'
         uses: JS-DevTools/npm-publish@v1
         with:
-          token: ${{ secrets.NPM_TOKEN }}
+          token: ${{ secrets.WTW_NPM_TOKEN }} # Make sure you have an NPM token set as a secret
+
