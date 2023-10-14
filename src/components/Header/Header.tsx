@@ -37,7 +37,6 @@ const Header = ({ user, onLogin, onLogout, onCreateAccount }: HeaderProps) => (
             <span className={styles["welcome"]}>
               Welcome, <b>{user.name}</b>!
             </span>
-            <Button size="small" onClick={onLogout} label="Log out" />
           </>
         ) : (
           <>
