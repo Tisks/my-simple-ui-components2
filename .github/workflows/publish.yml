@@ -124,7 +124,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          NEW_VERSION="${{ needs.set_up_new_version.outputs.new_tag_version }}"
+          NEW_VERSION="${{ steps.set_up_new_version.outputs.new_tag_version }}"
           echo "Update package version to $NEW_VERSION"
           git add package.json
           git commit -m "Update package version to $NEW_VERSION"
@@ -132,7 +132,7 @@ jobs:
 
       - name: Create Tag
         run: |
-          TAG_VERSION="${{ needs.set_up_new_version.outputs.new_tag_version }}"
+          TAG_VERSION="${{ steps.set_up_new_version.outputs.new_tag_version }}"
           git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
           git push origin "v$TAG_VERSION"
 
@@ -145,7 +145,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "${{ github.api_url }}/repos/${{ github.repository }}/releases" \
-            -d '{"tag_name":"v${{ needs.set_up_new_version.outputs.new_tag_version }}", "name":"v${{ needs.set_up_new_version.outputs.new_tag_version }}",
+            -d '{"tag_name":"v${{ steps.set_up_new_version.outputs.new_tag_version }}", "name":"v${{ steps.set_up_new_version.outputs.new_tag_version }}",
                 "draft":false,
                 "prerelease":false,
                 "generate_release_notes":true}')
