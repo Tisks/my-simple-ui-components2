@@ -1,4 +1,4 @@
-name: Create release and publish to npm
+name: Publish to NPM
 
 on:
   pull_request:
@@ -6,11 +6,11 @@ on:
       - closed
 
 jobs:
-  publish_to_npm:
-    name: Update package.json, create release, and publish to npm
+  on_pull_request_merge:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -44,7 +44,7 @@ jobs:
           fi
 
           echo "::set-output name=version_bump::$VERSION_BUMP"
-          
+
       - name: Determine new version
         id: new-version
         run: |
@@ -77,22 +77,18 @@ jobs:
           echo "NEW_VERSION: $NEW_VERSION"  # Add this line to print the NEW_VERSION
           echo "::set-output name=new_tag_version::$NEW_VERSION"
 
-      - name: Update package version
-        id: update-version
-        run: |
-          # Extract the existing version from the package.json
-          CURRENT_VERSION="${{ steps.get-version.outputs.tag_version }}"
-
-          # Replace this with your desired version string
-          NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
-
-          # Update the version in package.json
-          node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); packageJson.version = '${NEW_VERSION}'; fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));"
-
       - name: Setting up Git
         run: |
           git config --global user.email "leiser.mahu@gmail.com"
           git config --global user.name "Tisks"
+  
+      - name: Update package version
+        id: update-version
+        run: |
+          NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
+  
+          # Update the version in package.json
+          node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); packageJson.version = '${NEW_VERSION}'; fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));"
 
       - name: Commit and push changes
         run: |
@@ -133,3 +129,4 @@ jobs:
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }} # Make sure you have an NPM token set as a secret
+
