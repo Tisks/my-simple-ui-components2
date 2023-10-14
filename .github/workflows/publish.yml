@@ -12,7 +12,7 @@ jobs:
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup node
         uses: actions/setup-node@v3
@@ -97,10 +97,10 @@ jobs:
         run: |
           # Extract the existing version from the package.json
           CURRENT_VERSION="${{ steps.get-version.outputs.tag_version }}"
-  
+
           # Replace this with your desired version string
           NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
-  
+
           # Update the version in package.json
           node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); packageJson.version = '${NEW_VERSION}'; fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));"
 
@@ -109,6 +109,14 @@ jobs:
     needs: set_up_new_version
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
       - name: Setting up Git
         run: |
           git config --global user.email "leiser.mahu@gmail.com"
@@ -148,6 +156,14 @@ jobs:
     needs: set_up_new_version
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
       - name: Install
         run: yarn install --frozen-lockfile
 
