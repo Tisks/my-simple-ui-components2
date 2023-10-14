@@ -90,7 +90,6 @@ jobs:
             NEW_VERSION="Unknown"  # Default if none selected
           fi
           echo "NEW_VERSION: $NEW_VERSION"  # Add this line to print the NEW_VERSION
-
           echo "$NEW_VERSION" > new_version.txt
 
   create_release:
@@ -129,12 +128,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          NEW_VERSION=$(cat new_version.txt)
           RELEASE=$(curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "${{ github.api_url }}/repos/${{ github.repository }}/releases" \
-            -d '{"tag_name":"v${{ steps.set_up_new_version.outputs.new_tag_version }}", "name":"v${{ steps.set_up_new_version.outputs.new_tag_version }}",
+            -d '{"tag_name":"v'$NEW_VERSION'", "name":"v'$NEW_VERSION'",
                 "draft":false,
                 "prerelease":false,
                 "generate_release_notes":true}')
