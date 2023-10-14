@@ -6,32 +6,20 @@ on:
       - closed
 
 jobs:
-  publish_to_npm:
-    name: Update package.json, create release and publish to npm
+  set_up_new_version:
+    name: Set up new version
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
     steps:
-      - name: Check if PR is merged
-        id: pr-merged
-        run: |
-          if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
-            echo "Pull request is merged."
-            echo "::set-output name=pr_merged::true"
-          else
-            echo "Pull request is not merged."
-            echo "::set-output name=pr_merged::false"
-          fi
-
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Setup node
-        if: steps.pr-merged.outputs.pr_merged == 'true'
         uses: actions/setup-node@v3
         with:
           node-version: 16
 
       - name: Get Version from package.json
-        if: steps.pr-merged.outputs.pr_merged == 'true'
         id: get-version
         run: |
           TAG_VERSION=$(node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); console.log(packageJson.version);")
@@ -39,10 +27,8 @@ jobs:
           echo "::set-output name=tag_version::$TAG_VERSION"
 
       - name: Extract Version Bump
-        if: steps.pr-merged.outputs.pr_merged == 'true'
         id: extract-info
         run: |
-
           GITHUB_BOT_COMMENT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             "${{ github.api_url }}/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments")
@@ -53,18 +39,20 @@ jobs:
 
           if [ -z "$VERSION_CHECKBOXES" ]; then
             echo "No valid comments found. Exiting workflow."
-            exit 0
+            exit 1
           fi
 
           # Declare variables outside the conditional blocks
           VERSION_BUMP="Unknown"
 
-          # Extract the version bump type (Patch, Minor, or Major)
-          if [[ "$VERSION_CHECKBOXES" == *"[x]"* && "$VERSION_CHECKBOXES" == *"Patch"* ]]; then
+          # Convert the version checkboxes to lowercase and then check for "[x]" or "[X]"
+          VERSION_CHECKBOXES_LOWER=$(echo "$VERSION_CHECKBOXES" | tr '[:upper:]' '[:lower:]')
+
+          if [[ "$VERSION_CHECKBOXES_LOWER" == *"[x]"* && "$VERSION_CHECKBOXES_LOWER" == *"patch"* ]]; then
             VERSION_BUMP="Patch"
-          elif [[ "$VERSION_CHECKBOXES" == *"[x]"* && "$VERSION_CHECKBOXES" == *"Minor"* ]]; then
+          elif [[ "$VERSION_CHECKBOXES_LOWER" == *"[x]"* && "$VERSION_CHECKBOXES_LOWER" == *"minor"* ]]; then
             VERSION_BUMP="Minor"
-          elif [[ "$VERSION_CHECKBOXES" == *"[x]"* && "$VERSION_CHECKBOXES" == *"Major"* ]]; then
+          elif [[ "$VERSION_CHECKBOXES_LOWER" == *"[x]"* && "$VERSION_CHECKBOXES_LOWER" == *"major"* ]]; then
             VERSION_BUMP="Major"
           else
             VERSION_BUMP="Unknown"  # Default if none selected
@@ -74,7 +62,6 @@ jobs:
 
       - name: Determine new version
         id: new-version
-        if: steps.pr-merged.outputs.pr_merged == 'true'
         run: |
           echo "Version Bump: ${{ steps.extract-info.outputs.version_bump }}"
           echo "Actual version: ${{ steps.get-version.outputs.tag_version }}"
@@ -107,7 +94,6 @@ jobs:
 
       - name: Update package version
         id: update-version
-        if: steps.pr-merged.outputs.pr_merged == 'true'
         run: |
           # Extract the existing version from the package.json
           CURRENT_VERSION="${{ steps.get-version.outputs.tag_version }}"
@@ -118,28 +104,30 @@ jobs:
           # Update the version in package.json
           node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); packageJson.version = '${NEW_VERSION}'; fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));"
 
+  create_release:
+    name: Create release
+    needs: set_up_new_version
+    runs-on: ubuntu-latest
+    steps:
       - name: Setting up Git
         run: |
-            git config --global user.email "leiser.mahu@gmail.com"
-            git config --global user.name "Tisks"
+          git config --global user.email "leiser.mahu@gmail.com"
+          git config --global user.name "Tisks"
 
       - name: Commit and push changes
-        if: steps.pr-merged.outputs.pr_merged == 'true'
         run: |
-          NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
+          NEW_VERSION="${{ needs.set_up_new_version.outputs.new_tag_version }}"
           git add package.json
           git commit -m "Update package version to $NEW_VERSION"
           git push
 
       - name: Create Tag
-        if: steps.pr-merged.outputs.pr_merged == 'true'
         run: |
-          TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
+          TAG_VERSION="${{ needs.set_up_new_version.outputs.new_tag_version }}"
           git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
           git push origin "v$TAG_VERSION"
 
       - name: Create Release
-        if: steps.pr-merged.outputs.pr_merged == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -148,13 +136,18 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "${{ github.api_url }}/repos/${{ github.repository }}/releases" \
-            -d '{"tag_name":"v${{ steps.new-version.outputs.new_tag_version }}", "name":"v${{ steps.new-version.outputs.new_tag_version }}",
+            -d '{"tag_name":"v${{ needs.set_up_new_version.outputs.new_tag_version }}", "name":"v${{ needs.set_up_new_version.outputs.new_tag_version }}",
                 "draft":false,
                 "prerelease":false,
                 "generate_release_notes":true}')
 
           echo "RELEASE: $RELEASE"
 
+  publish_to_npm:
+    name: Publish to npm
+    needs: set_up_new_version
+    runs-on: ubuntu-latest
+    steps:
       - name: Install
         run: yarn install --frozen-lockfile
 
@@ -162,8 +155,6 @@ jobs:
         run: yarn build
 
       - name: Publish to NPM
-        if: steps.pr-merged.outputs.pr_merged == 'true'
         uses: JS-DevTools/npm-publish@v1
         with:
-          token: ${{ secrets.NPM_TOKEN }} # Make sure you have an NPM token set as a secret
-
+          token: ${{ secrets.NPM_TOKEN }}
