@@ -118,6 +118,11 @@ jobs:
           # Update the version in package.json
           node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); packageJson.version = '${NEW_VERSION}'; fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));"
 
+      - name: Setting up Git
+        run: |
+            git config --global user.email "leiser.mahu@gmail.com"
+            git config --global user.name "Tisks"
+
       - name: Commit and push changes
         if: steps.pr-merged.outputs.pr_merged == 'true'
         run: |
@@ -125,11 +130,6 @@ jobs:
           git add package.json
           git commit -m "Update package version to $NEW_VERSION"
           git push
-
-      - name: Setting up Git
-        run: |
-          git config --global user.email "leiser.mahu@gmail.com"
-          git config --global user.name "Tisks"
 
       - name: Create Tag
         if: steps.pr-merged.outputs.pr_merged == 'true'
