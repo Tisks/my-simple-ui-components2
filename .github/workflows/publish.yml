@@ -33,34 +33,18 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             "${{ github.api_url }}/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments")
 
-          VERSION_CHECKBOXES=$(echo "$GITHUB_BOT_COMMENT" | jq '.[] | select(.user.login == "github-actions[bot]") | .body')
+          # Parse the version bump from the comment
+          VERSION_BUMP=$(echo "$GITHUB_BOT_COMMENT" | grep -oP '(?<=\[x\] )[A-Z][a-z]+')
 
-          echo "VERSION_CHECKBOXES: $VERSION_CHECKBOXES"
+          echo "VERSION_BUMP: $VERSION_BUMP"
 
-          if [ -z "$VERSION_CHECKBOXES" ]; then
-            echo "No valid comments found. Exiting workflow."
+          if [ -z "$VERSION_BUMP" ]; then
+            echo "No valid version bump selected. Exiting workflow."
             exit 0
           fi
 
-          # Declare variables outside the conditional blocks
-          VERSION_BUMP="Unknown"
-
-          # Convert the version checkboxes to lowercase and then check for "[x]" or "[X]"
-          VERSION_CHECKBOXES_LOWER=$(echo "$VERSION_CHECKBOXES" | tr '[:upper:]' '[:lower:]')
-
-          if [[ "$VERSION_CHECKBOXES_LOWER" == *"["x"]"* && "$VERSION_CHECKBOXES_LOWER" == *"patch"* ]]; then
-            VERSION_BUMP="Patch"
-          elif [[ "$VERSION_CHECKBOXES_LOWER" == *"["x"]"* && "$VERSION_CHECKBOXES_LOWER" == *"minor"* ]]; then
-            VERSION_BUMP="Minor"
-          elif [[ "$VERSION_CHECKBOXES_LOWER" == *"["x"]"* && "$VERSION_CHECKBOXES_LOWER" == *"major"* ]]; then
-            VERSION_BUMP="Major"
-          else
-            VERSION_BUMP="Unknown"  # Default if none selected
-          fi
-          echo "VERSION_BUMP: $VERSION_BUMP"  # Add this line to print the VERSION_BUMP
-
           echo "::set-output name=version_bump::$VERSION_BUMP"
-
+          
       - name: Determine new version
         id: new-version
         run: |
@@ -98,10 +82,10 @@ jobs:
         run: |
           # Extract the existing version from the package.json
           CURRENT_VERSION="${{ steps.get-version.outputs.tag_version }}"
-  
+
           # Replace this with your desired version string
           NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
-  
+
           # Update the version in package.json
           node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); packageJson.version = '${NEW_VERSION}'; fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));"
 
