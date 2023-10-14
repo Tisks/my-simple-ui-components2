@@ -9,7 +9,7 @@ jobs:
   publish_to_npm:
     name: Update package.json, create release, and publish to npm
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
