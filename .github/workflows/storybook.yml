@@ -17,7 +17,7 @@ jobs:
           node-version: 16
 
       - name: Install and Build
-        run: yarn install && yarn build-storybook
+        run: yarn clean-storybook-install
           
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4.4.3

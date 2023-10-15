@@ -10,7 +10,7 @@
     "test:cov": "yarn test --coverage",
     "build-storybook": "cd storybook && yarn build-storybook",
     "clean-install": "rm -rf ./dist ./node_modules yarn.lock && yarn",
-    "clean-build": "yarn clean-install && yarn build && true",
+    "clean-build": "yarn clean-install && yarn build",
     "clean-storybook-install": "yarn clean-install && cd storybook && yarn clean-install"
   },
   "dependencies": {

@@ -9,7 +9,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "yarn install && storybook build"
+    "build-storybook": "storybook build",
+    "clean-install": "rm -rf ./storybook-static ./node_modules yarn.lock && yarn && yarn build-storybook"
   },
   "dependencies": {
     "react": "^18.2.0",
