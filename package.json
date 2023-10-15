@@ -8,10 +8,10 @@
     "build": "rollup -c",
     "test": "jest",
     "test:cov": "yarn test --coverage",
-    "build-storybook": "cd docs && yarn build-storybook",
+    "build-storybook": "cd storybook && yarn build-storybook",
     "clean-install": "rm -rf ./dist ./node_modules yarn.lock && yarn",
     "clean-build": "yarn clean-install && yarn build",
-    "clean-storybook-install": "yarn clean-install && cd docs && yarn clean-install"
+    "clean-storybook-install": "yarn clean-install && cd storybook && yarn clean-install"
   },
   "dependencies": {
     "react": "^17.0.1",
@@ -26,6 +26,7 @@
     "@rollup/plugin-commonjs": "^25.0.4",
     "@rollup/plugin-node-resolve": "^15.2.1",
     "@rollup/plugin-typescript": "^11.1.4",
+    "@storybook/test-runner": "^0.13.0",
     "@testing-library/dom": "^7.30.3",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
