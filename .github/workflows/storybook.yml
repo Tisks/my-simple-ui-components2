@@ -21,6 +21,7 @@ jobs:
         run: |
             TAG_VERSION=$(node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); console.log(packageJson);")
             echo "Body: $TAG_VERSION"
+            ls -al
             echo "::set-output name=tag_version::$TAG_VERSION"
 
       - name: Install and Build
