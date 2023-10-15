@@ -8,10 +8,10 @@
     "build": "rollup -c",
     "test": "jest",
     "test:cov": "yarn test --coverage",
-    "build-storybook": "cd storybook && yarn build-storybook",
+    "build-storybook": "cd docs && yarn build-storybook",
     "clean-install": "rm -rf ./dist ./node_modules yarn.lock && yarn",
     "clean-build": "yarn clean-install && yarn build",
-    "clean-storybook-install": "yarn clean-install && cd storybook && yarn clean-install"
+    "clean-storybook-install": "yarn clean-install && cd docs && yarn clean-install"
   },
   "dependencies": {
     "react": "^17.0.1",
