@@ -19,8 +19,8 @@ jobs:
       - name: Get Version from package.json
         id: get-version
         run: |
-            TAG_VERSION=$(node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); console.log(packageJson.version);")
-            echo "TAG_VERSION Body: $TAG_VERSION"
+            TAG_VERSION=$(node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); console.log(packageJson);")
+            echo "Body: $TAG_VERSION"
             echo "::set-output name=tag_version::$TAG_VERSION"
 
       - name: Install and Build
