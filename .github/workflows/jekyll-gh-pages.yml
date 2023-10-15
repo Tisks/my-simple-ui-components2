@@ -32,11 +32,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Build with Storybook
-        run: |
-          # Change to the "docs" folder
-          cd docs
-          # Build Storybook
-          yarn build-storybook
+        run: yarn clean-storybook-install
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
