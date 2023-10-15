@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: '16'
       - name: Install dependencies and build storybook
-        run: cd storybook && yarn && yarn playwright install --with-deps && yarn build-storybook
+        run: cd storybook && yarn clean-install && yarn playwright install --with-deps
       - name: Serve Storybook and run tests
         run: |
           npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
