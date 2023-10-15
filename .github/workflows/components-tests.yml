@@ -1,4 +1,4 @@
-name: CI (push)
+name: Testing library tests
 
 on:
   pull_request:
