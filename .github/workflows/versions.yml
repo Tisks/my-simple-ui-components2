@@ -1,0 +1,22 @@
+name: Comment version bump options
+
+on:
+  pull_request:
+    types:
+      - opened
+
+jobs:
+  comment:
+    name: version bump comment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Please check the type of version bump: \n - [x] Patch \n - [ ] Minor \n - [ ] Major'
+            })
+

@@ -1,0 +1,25 @@
+.default-see-more-button {
+  @include button-reset;
+  gap: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: fit-content;
+
+  &:focus,
+  &:active {
+    outline: none;
+  }
+
+  &__text {
+    @include p-reset;
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  &__icon {
+    padding-top: 2px;
+    width: 25px;
+    height: 25px;
+  }
+}

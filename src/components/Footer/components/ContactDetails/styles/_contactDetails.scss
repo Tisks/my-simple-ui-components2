@@ -1,0 +1,17 @@
+.contact-details {
+  @include section-reset;
+  --padding-inline: 16px;
+  width: 100%;
+  display: flex;
+  padding-top: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1280px;
+  flex-direction: column;
+  gap: 15px;
+  padding-inline: var(--padding-inline);
+
+  @include desktop {
+    flex-direction: row;
+  }
+}

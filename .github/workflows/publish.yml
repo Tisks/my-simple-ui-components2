@@ -4,11 +4,13 @@ on:
   pull_request:
     types:
       - closed
+    branches:
+      - main
 
 jobs:
   on_pull_request_merge:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    if: github.event.pull_request.merged == true
     steps:
 
       - name: Checkout code
@@ -19,13 +21,17 @@ jobs:
         with:
           node-version: 16
 
-      - name: Get Version from package.json
+      - name: Get Version from latest release's tag names
         id: get-version
         run: |
-          TAG_VERSION=$(node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); console.log(packageJson.version);")
-          echo "TAG_VERSION Body: $TAG_VERSION"
+
+          TAG_VERSION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          "${{ github.api_url }}/repos/${{ github.repository }}/releases/latest")
+  
+          TAG_VERSION=$(echo "$TAG_VERSION" | jq -r .tag_name | sed 's/^v//')
+          echo "Latest Release Version: $TAG_VERSION"
           echo "::set-output name=tag_version::$TAG_VERSION"
-          
 
       - name: Extract Version Bump
         id: extract-info
@@ -80,8 +86,8 @@ jobs:
 
       - name: Setting up Git
         run: |
-          git config --global user.email "leiser.mahu@gmail.com"
-          git config --global user.name "Tisks"
+          git config --global user.email "developers@wheeltheworld.com"
+          git config --global user.name "WTW Developers"
   
       - name: Update package version
         id: update-version
@@ -91,18 +97,20 @@ jobs:
           # Update the version in package.json
           node -e "const fs = require('fs'); const packageJson = JSON.parse(fs.readFileSync('package.json')); packageJson.version = '${NEW_VERSION}'; fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));"
 
-      - name: Commit and push changes
+      - name: Commit new version to package.json and create tag
         run: |
           NEW_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
           git add package.json
           git commit -m "Update package version to $NEW_VERSION"
-          git push
-
-      - name: Create Tag
-        run: |
-          TAG_VERSION="${{ steps.new-version.outputs.new_tag_version }}"
-          git tag -a "v$TAG_VERSION" -m "Version $TAG_VERSION"
-          git push origin "v$TAG_VERSION"
+          git tag -a "v$NEW_VERSION" -m "Version $NEW_VERSION"
+  
+      - name: Push commit
+        uses: CasperWA/push-protected@v2
+        with:
+          token: ${{ secrets.PUSH_PACKAGE_VERSION_TO_MAIN }}
+          branch: main
+          unprotect_reviews: true
+          tags: true
 
       - name: Create Release
         env:

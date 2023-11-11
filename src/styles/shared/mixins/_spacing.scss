@@ -1,0 +1,9 @@
+@mixin wrapper-padding {
+  padding-right: $spacing-20;
+  padding-left: $spacing-20;
+
+  @include desktop {
+    padding-right: $spacing-80;
+    padding-left: $spacing-80;
+  }
+}

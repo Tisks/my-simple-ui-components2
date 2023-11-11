@@ -1,0 +1,24 @@
+.text-link {
+  &__text {
+    @include p-reset;
+    color: inherit;
+    text-wrap: wrap;
+  }
+  &__link {
+    @include a-reset;
+    color: inherit;
+    text-decoration: none;
+  }
+  &__icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.icon--flex-gap {
+  gap: 5px;
+  display: flex;
+  overflow: visible;
+  white-space: wrap;
+  text-overflow: clip;
+}

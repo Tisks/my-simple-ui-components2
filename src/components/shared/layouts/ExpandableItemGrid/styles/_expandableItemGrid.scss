@@ -1,0 +1,51 @@
+.expandable-item-grid {
+  @include ul-reset;
+  --grid-columns: 1fr; /* Define a CSS custom property */
+  --width: fit-content;
+  display: grid;
+  grid-row-gap: 8px;
+  height: fit-content;
+  grid-template-columns: var(--grid-columns); /* Use the custom property */
+  width: var(--width);
+  margin: 0px;
+  padding-inline-start: 0px;
+
+  @include mobile {
+    grid-column-gap: 40px;
+  }
+
+  @include small-tablet {
+    grid-column-gap: 10px;
+  }
+
+  @include tablet {
+    grid-column-gap: 57px;
+  }
+
+  @include desktop {
+    grid-column-gap: 120px;
+  }
+
+  &__item {
+    @include div-reset;
+    max-width: fit-content;
+  }
+
+  &__title {
+    @include li-reset;
+    list-style: none;
+    background-color: inherit;
+    text-transform: capitalize;
+    max-width: fit-content;
+
+    &__text {
+      @include h4-reset;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 24px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}

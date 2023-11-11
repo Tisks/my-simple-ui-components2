@@ -1,3 +1,5 @@
+// .storybook/test-runner.ts
+
 import { injectAxe, checkA11y } from 'axe-playwright';
 
 import type { TestRunnerConfig } from '@storybook/test-runner';

@@ -1,21 +1,26 @@
-name: 'Storybook Tests'
+name: "Storybook Tests"
 on:
-    pull_request:
-      types:
-        - opened
-        - synchronize
+  pull_request:
+    types:
+      - opened
+      - labeled
+    branches:
+      - main
+  merge_group:
+
 jobs:
   test:
     timeout-minutes: 60
     name: storybook test
     runs-on: ubuntu-latest
+    if: (github.event.action == 'opened' || github.event.action == 'checks_requested' || contains(github.event.pull_request.labels.*.name, 'deploy:integration'))
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: "16"
       - name: Install dependencies and build storybook
-        run: cd storybook && yarn clean-install && yarn playwright install --with-deps
+        run: yarn && cd storybook && yarn clean-install && yarn playwright install --with-deps
       - name: Serve Storybook and run tests
         run: |
           npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \

@@ -1,0 +1,513 @@
+@mixin common-reset {
+  font-size: 100%;
+  font-weight: inherit;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+}
+
+@mixin box-sizing-border-box {
+  box-sizing: border-box;
+}
+
+@mixin div-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin span-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin applet-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin object-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin iframe-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin h1-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin h3-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin h4-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin h5-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin h6-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin p-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin abbr-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin acronym-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin address-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin big-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin cite-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin code-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin del-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin dfn-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin em-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin ins-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin kbd-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin s-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin strike-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin strong-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin tt-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin var-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin b-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin u-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin i-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin center-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin dl-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin dt-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin dd-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin li-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin fieldset-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin form-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin label-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin caption-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin tbody-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin tfoot-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin thead-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin tr-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin th-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin td-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin article-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin aside-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin embed-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin hgroup-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin output-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin ruby-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin summary-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin time-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin mark-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin h2-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin main-reset {
+  display: block;
+}
+
+@mixin article-reset {
+  display: block;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin aside-reset {
+  display: block;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin details-reset {
+  display: block;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin figcaption-reset {
+  display: block;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin figure-reset {
+  display: block;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin footer-reset {
+  display: block;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin header-reset {
+  display: block;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin hgroup-reset {
+  display: block;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin menu-reset {
+  display: block;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin nav-reset {
+  display: block;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin section-reset {
+  display: block;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin ol-reset {
+  list-style: none;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin ul-reset {
+  list-style: none;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin blockquote-reset {
+  quotes: none;
+  @include common-reset;
+  @include box-sizing-border-box;
+  &:before,
+  &:after-reset {
+    content: "";
+    content: none;
+  }
+}
+@mixin q-reset {
+  quotes: none;
+  @include common-reset;
+  @include box-sizing-border-box;
+  &:before,
+  &:after-reset {
+    content: "";
+    content: none;
+  }
+}
+
+@mixin audio-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin canvas-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+@mixin video-reset {
+  display: inline-block;
+  max-width: 100%;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin a-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+  &:active,
+  &:hover-reset {
+    outline: none;
+  }
+}
+
+@mixin img-reset {
+  max-width: 100%;
+  display: inline-block;
+  vertical-align: middle;
+  height: auto;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin picture-reset {
+  display: inline-block;
+}
+
+@mixin code-reset {
+  font-family: monospace, monospace;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin kbd-reset {
+  font-family: monospace, monospace;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin pre-reset {
+  font-family: monospace, monospace;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin samp-reset {
+  font-family: monospace, monospace;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin sub-reset {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+  bottom: -5px;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin sup-reset {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+  top: -5px;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin table-reset {
+  border-collapse: collapse;
+  border-spacing: 0;
+  text-indent: 0;
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin hr-reset {
+  box-sizing: content-box;
+  overflow: visible;
+  background: #000;
+  border: 0;
+  height: 1px;
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+  page-break-after: always;
+  width: 100%;
+}
+
+@mixin small-reset {
+  @include common-reset;
+  @include box-sizing-border-box;
+}
+
+@mixin textarea-reset {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  vertical-align: top;
+  resize: vertical;
+}
+
+@mixin legend-reset {
+  color: inherit;
+  white-space: normal;
+  display: block;
+  border: 0;
+  max-width: 100%;
+  width: 100%;
+  font-size: 100%;
+  font: inherit;
+  margin: 0px;
+  padding: 0;
+  border: 0;
+}
+
+@mixin fieldset-reset {
+  min-width: 0;
+}
+
+@mixin progress-reset {
+  vertical-align: baseline;
+}
+
+@mixin button-reset {
+  overflow: visible;
+  text-transform: none;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  line-height: normal;
+}
+
+@mixin input-reset {
+  overflow: visible;
+  font-family: inherit;
+  font-size: 100%;
+  margin: 0;
+  line-height: normal;
+  &:focus-reset {
+    outline: none;
+  }
+  padding: 0;
+}
+
+@mixin select-reset {
+  text-transform: none;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}

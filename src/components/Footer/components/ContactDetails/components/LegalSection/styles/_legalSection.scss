@@ -1,0 +1,64 @@
+.legal-section {
+  @include section-reset;
+  &__list {
+    @include ul-reset;
+    gap: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    align-items: flex-start;
+    padding-inline-start: 0px;
+
+    @include tablet {
+      margin-top: 0px;
+    }
+
+    @include desktop {
+      margin-top: 0px;
+    }
+
+    &__item {
+      @include mobile {
+        margin-top: -25px;
+      }
+
+      @include small-tablet {
+        margin-top: -25px;
+      }
+
+      &__text {
+        font-size: 14px;
+
+        @include tablet {
+          font-size: 16px;
+        }
+
+        @include desktop {
+          font-size: 16px;
+        }
+
+        &--standard {
+          color: $gray-600;
+        }
+      }
+
+      &__link {
+        font-size: 14px;
+
+        @include tablet {
+          font-size: 16px;
+        }
+
+        @include desktop {
+          font-size: 16px;
+        }
+
+        &--standard {
+          color: $gray-600;
+        }
+
+        text-transform: "none";
+      }
+    }
+  }
+}
