@@ -2,17 +2,30 @@ name: Get Comment Body
 
 on:
   pull_request:
-    types:
-      - synchronize
+    types: [opened, synchronize]
   issue_comment:
-    types: [created, edited, deleted]
+    types: [created, edited]
 jobs:
   get-comment-body:
     runs-on: ubuntu-latest
-
+    name: check version type
+    if: github.event.issue.pull_request == 'opened'
     steps:
+      - name: Get PR branch
+        uses: xt0rted/pull-request-comment-branch@v1
+        id: comment-branch
+
+      - name: Set latest commit status as pending
+        uses: myrotvorets/set-commit-status-action@master
+        with:
+          sha: ${{ steps.comment-branch.outputs.head_sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: pending
+
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.comment-branch.outputs.head_ref }}
 
       - name: Extract Version Bump
         id: extract-info
@@ -32,3 +45,11 @@ jobs:
           fi
 
           echo "::set-output name=version_bump::$VERSION_BUMP"
+
+      - name: Set latest commit status as ${{ job.status }}
+        uses: myrotvorets/set-commit-status-action@master
+        if: always()
+        with:
+          sha: ${{ steps.comment-branch.outputs.head_sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
