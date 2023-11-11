@@ -22,12 +22,7 @@ export const checkCorrectInfoInLinkList = (
     columnInfo[index].href &&
       expect(link).toHaveAttribute("href", columnInfo[index].href);
     if (columnInfo[index].text) {
-      !columnInfo[index].icon &&
-        expect(link).toHaveTextContent(columnInfo[index].text!);
-    }
-    if (columnInfo[index].icon) {
-      const id = columnInfo[index].text || columnInfo[index].href || "";
-      id && expect(within(link).queryByTestId(id)).not.toBeNull();
+      expect(link).toHaveTextContent(columnInfo[index].text!);
     }
   }
 };

@@ -7,7 +7,6 @@ export const defaultTarget = "_self";
 const TextLink: FC<TextLinkProps> = ({
   href,
   text,
-  icon: Icon,
   target = defaultTarget,
   content_group,
   onClick,
@@ -26,18 +25,9 @@ const TextLink: FC<TextLinkProps> = ({
       <p
         className={classnames(
           styles["text-link__text"],
-          classNames?.["text-link__text"],
-          {
-            [styles["icon--flex-gap"]]: !!Icon,
-          }
+          classNames?.["text-link__text"]
         )}
       >
-        {Icon && (
-          <Icon
-            data-testid={`${text}-icon`}
-            className={styles["text-link__icon"]}
-          />
-        )}
         {text}
       </p>
     );
@@ -52,16 +42,13 @@ const TextLink: FC<TextLinkProps> = ({
             role="link"
             className={classnames(
               styles["text-link__link"],
-              classNames?.["text-link__link"],
-              {
-                [styles["icon--flex-gap"]]: !!Icon,
-              }
+              classNames?.["text-link__link"]
             )}
             target={target}
             onClick={() => {
               if (doOnClickOnLink) {
                 doOnClickOnLink(
-                  { href, icon: Icon, text, target },
+                  { href, text, target },
                   enableSubPathsOnly,
                   additionalProps
                 ) && onClick?.(text, href, content_group);
@@ -70,12 +57,6 @@ const TextLink: FC<TextLinkProps> = ({
               }
             }}
           >
-            {Icon && (
-              <Icon
-                data-testid={`${text}-icon`}
-                className={styles["text-link__icon"]}
-              />
-            )}
             {text}
           </a>
         </LinkWrapperComponent>
@@ -85,20 +66,11 @@ const TextLink: FC<TextLinkProps> = ({
           href={href}
           className={classnames(
             styles["text-link__link"],
-            classNames?.["text-link__link"],
-            {
-              [styles["icon--flex-gap"]]: !!Icon,
-            }
+            classNames?.["text-link__link"]
           )}
           target={target}
           onClick={() => onClick?.(text, href, content_group)}
         >
-          {Icon && (
-            <Icon
-              data-testid={`${text}-icon`}
-              className={styles["text-link__icon"]}
-            />
-          )}
           {text}
         </a>
       )}

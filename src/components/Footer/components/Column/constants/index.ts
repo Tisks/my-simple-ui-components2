@@ -1,5 +1,4 @@
 //This is where we have the default columns of the footer
-import Phone from "wtw-icons/_icons/Phone";
 import { ColumnProps, ColumnPropsArray } from "..";
 import { getDestinationPlaceToStayRoute, Routes } from "../utils";
 import { destinations } from "./destinations";
@@ -25,7 +24,6 @@ export const aboutInfo: ColumnProps = {
     {
       href: `tel:${contact.phone}`,
       text: contact.phone,
-      icon: Phone,
       doInjectPrefixBaseUrl: false,
     },
   ],

@@ -12,7 +12,7 @@ const SocialMediaIcons: FC<SocialMediaIconsProps> = ({ columnProps }) => {
       data-testid={socialMediaId}
     >
       <ul className={styles["social-media-icons__list"]}>
-        {columnInfo.map(({ text, icon: Icon, href, target = "_blank" }) => (
+        {columnInfo.map(({ text, href, target = "_blank" }) => (
           <li
             key={text || href}
             className={styles["social-media-icons__list__item"]}
@@ -25,12 +25,7 @@ const SocialMediaIcons: FC<SocialMediaIconsProps> = ({ columnProps }) => {
                 text && href && onClick?.(text, href, content_group)
               }
             >
-              {Icon && (
-                <Icon
-                  data-testid={text || href}
-                  className={styles["social-media-icons__list__item__icon"]}
-                />
-              )}
+              {text}
             </a>
           </li>
         ))}

@@ -1,11 +1,9 @@
-import { IconComponent } from "wtw-icons/types";
 import { GenericWrapperProps } from "../../../shared";
 
 export type TextLinkContent = {
   href?: string;
   text?: string;
   target?: React.HTMLAttributeAnchorTarget;
-  icon?: IconComponent;
 };
 
 export type TextLink = {
@@ -23,7 +21,6 @@ export type TOnClickTextLinkInfo = (
 export interface TextLinkProps {
   href?: string;
   text?: string;
-  icon?: IconComponent;
   target?: React.HTMLAttributeAnchorTarget;
   content_group?: string;
   onClick?: TOnClickTextLinkInfo;

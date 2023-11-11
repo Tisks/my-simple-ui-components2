@@ -2,7 +2,6 @@ import React from "react";
 import TextLink, { defaultTarget } from "../TextLink";
 import { TextLinkProps } from "../types";
 import { fireEvent, render, screen } from "@testing-library/react";
-import Phone from "wtw-icons/_icons/Phone";
 
 describe("<TextLink />", () => {
   const onClickMock = jest.fn();
@@ -11,7 +10,6 @@ describe("<TextLink />", () => {
     text: "Google",
     target: "_parent",
     onClick: onClickMock,
-    icon: Phone,
   };
 
   it("Should render a link if href is passed and call onClick with the link's text, href, content group and icon if passed", () => {
@@ -26,9 +24,6 @@ describe("<TextLink />", () => {
     expect(link).toHaveTextContent(exampleLink.text!);
     expect(link).toHaveAttribute("href", exampleLink.href);
     expect(link).toHaveAttribute("target", exampleLink.target);
-
-    let icon = screen.queryByTestId(`${exampleLink.text!}-icon`);
-    expect(icon).not.toBeNull();
 
     fireEvent.click(link!);
 
@@ -46,8 +41,6 @@ describe("<TextLink />", () => {
     link = screen.getByRole("link");
     expect(link).toHaveAttribute("target", defaultTarget); //Default value
 
-    icon = screen.queryByTestId(`${exampleLink.text!}-icon`);
-    expect(icon).toBeNull();
   });
 
   it("Should render a text due to not passing it an href and should not call onClick", () => {
@@ -60,9 +53,6 @@ describe("<TextLink />", () => {
     const link = screen.queryByRole("link");
     expect(link).toBeNull();
 
-    let icon = screen.queryByTestId(`${exampleLink.text!}-icon`);
-    expect(icon).not.toBeNull();
-
     const text = screen.queryByText(exampleLink.text!);
     expect(text).not.toBeNull();
 
@@ -72,14 +62,11 @@ describe("<TextLink />", () => {
 
     rerender(
       <TextLink
-        {...{ ...exampleLink, icon: undefined }}
+        {...{ ...exampleLink }}
         href={undefined}
         onClick={onClickFn}
       />
     );
-
-    icon = screen.queryByTestId(`${exampleLink.text!}-icon`);
-    expect(icon).toBeNull();
   });
 
   it("Should render nothing due to not passing it an href or text", () => {
