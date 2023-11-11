@@ -2,8 +2,9 @@ name: Get Comment Body
 
 on:
   pull_request:
+    types: [opened, synchronize]
   issue_comment:
-    types: edited
+    types: [created, edited]
 jobs:
   get-comment-body:
     runs-on: ubuntu-latest
