@@ -2,6 +2,8 @@ name: Get Comment Body
 
 on:
   pull_request:
+    types:
+      - synchronize
   issue_comment:
     types: [created, edited, deleted]
 jobs:
