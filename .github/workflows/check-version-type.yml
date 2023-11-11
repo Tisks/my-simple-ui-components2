@@ -1,13 +1,14 @@
 name: Get Comment Body
 
 on:
-  issue_comment:
-    types: [created, edited, deleted]
+  pull_request:
+    types:
+      - opened
+      - synchronize
 jobs:
   get-comment-body:
     runs-on: ubuntu-latest
     name: check version type
-    if: github.event.issue.pull_request && contains(github.event.comment.body, 'Please check the type of version bump:')
     steps:
       - name: Get PR branch
         uses: xt0rted/pull-request-comment-branch@v1
