@@ -1,0 +1,10 @@
+.accordion {
+  @include div-reset;
+
+  width: 100%;
+
+  &__spacer {
+    @include div-reset;
+    height: 16px;
+  }
+}

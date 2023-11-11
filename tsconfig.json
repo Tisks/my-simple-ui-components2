@@ -15,7 +15,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "allowSyntheticDefaultImports": true,
-    "declarationDir": "types" /* Specify the output directory for generated declaration files. */,
+    "downlevelIteration": true,
+    "declarationDir": "types" /* Specify the output directory for generated declaration files. */
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "storybook"]

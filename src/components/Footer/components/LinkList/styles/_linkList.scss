@@ -1,0 +1,12 @@
+.link-list {
+  &__list {
+    &__item {
+      @include li-reset;
+      list-style: none;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: fit-content;
+    }
+  }
+}

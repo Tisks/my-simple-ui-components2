@@ -1,0 +1,34 @@
+name: Get Comment Body
+
+on:
+  pull_request:
+    types:
+      - synchronize
+  issue_comment:
+    types: [created, edited, deleted]
+jobs:
+  get-comment-body:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Extract Version Bump
+        id: extract-info
+        run: |
+          GITHUB_BOT_COMMENT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "${{ github.api_url }}/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments")
+
+          # Parse the version bump from the comment
+          VERSION_BUMP=$(echo "$GITHUB_BOT_COMMENT" | grep -oP '(?<=\[x\] )[A-Z][a-z]+')
+
+          echo "VERSION_BUMP: $VERSION_BUMP"
+
+          if [ -z "$VERSION_BUMP" ]; then
+            echo "No valid version bump selected. Exiting workflow."
+            exit 0
+          fi
+
+          echo "::set-output name=version_bump::$VERSION_BUMP"

@@ -1,0 +1,42 @@
+name: Checking build
+
+on:
+  pull_request:
+    types:
+      - opened
+      - labeled
+    branches:
+      - main
+  merge_group:
+
+jobs:
+  build:
+    name: check build
+    runs-on: ubuntu-latest
+    if: (github.event.action == 'opened' || github.event.action == 'checks_requested' || contains(github.event.pull_request.labels.*.name, 'deploy:integration'))
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Restore node modules cache
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn install --prefer-offline --frozen-lockfile
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        run: yarn build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

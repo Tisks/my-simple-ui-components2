@@ -1,0 +1,79 @@
+.item {
+  @include div-reset;
+  border-radius: 6px;
+
+  &--bordered {
+    border: 1px solid #949494;
+  }
+}
+
+.title {
+  @include button-reset;
+  display: flex; /* Use flex */
+  padding: 16px;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+  background-color: inherit;
+  border: none;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+
+  &--right-icon {
+    justify-content: space-between; /* Separate title and arrow */
+  }
+
+  &__text {
+    @include p-reset;
+    font-size: 16px;
+    &--left-icon {
+      padding-left: 8px;
+    }
+  }
+
+  &--has-only-bottom-border {
+    border-bottom: 1px solid #949494;
+  }
+
+  &--has-only-bottom-border-non-active {
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+  }
+
+  &--compact {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+}
+
+.content {
+  @include div-reset;
+  max-height: 0px;
+  overflow: hidden;
+  width: 100%;
+  text-align: initial;
+  background-color: inherit;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+  transition: max-height 0.3s ease-in-out; // Smooth transition animation
+
+  &--compact {
+    @include p-reset;
+    padding-inline: 0px;
+  }
+
+  &--standard {
+    @include p-reset;
+    padding-bottom: 16px;
+  }
+
+  &--simple-format {
+    padding-inline: 16px;
+  }
+}
+
+.active {
+  max-height: 100%;
+}

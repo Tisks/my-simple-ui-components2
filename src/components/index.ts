@@ -1,3 +1,4 @@
 export * from "./Button";
-export * from "./Header";
-export * from "./Page";
+export * from "./Accordion";
+export * from "./Footer";
+export * from "./shared";
