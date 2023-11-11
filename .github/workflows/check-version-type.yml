@@ -7,7 +7,7 @@ on:
 jobs:
   get-comment-body:
     runs-on: ubuntu-latest
-
+    name: check version type
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
