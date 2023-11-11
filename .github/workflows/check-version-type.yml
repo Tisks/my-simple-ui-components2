@@ -3,13 +3,11 @@ name: Get Comment Body
 on:
   pull_request:
     types: [opened, synchronize]
-  issue_comment:
-    types: [created, edited]
+
 jobs:
   get-comment-body:
     runs-on: ubuntu-latest
     name: check version type
-    if: github.event.issue.pull_request == 'opened'
     steps:
       - name: Get PR branch
         uses: xt0rted/pull-request-comment-branch@v1
@@ -24,8 +22,6 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          ref: ${{ steps.comment-branch.outputs.head_ref }}
 
       - name: Extract Version Bump
         id: extract-info
