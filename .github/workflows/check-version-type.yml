@@ -32,7 +32,7 @@ jobs:
         run: |
           GITHUB_BOT_COMMENT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            "${{ github.api_url }}/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments")
+            "${{ github.api_url }}/repos/${{ github.repository }}/issues/${{ 110 }}/comments")
 
           # Parse the version bump from the comment
           VERSION_BUMP=$(echo "$GITHUB_BOT_COMMENT" | grep -oP '(?<=\[x\] )[A-Z][a-z]+')
