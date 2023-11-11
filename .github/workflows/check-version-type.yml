@@ -1,10 +1,8 @@
 name: Get Comment Body
 
 on:
-  pull_request:
-    types: [opened, synchronize]
   issue_comment:
-    types: [created, edited]
+    types: [created, edited, deleted]
 jobs:
   get-comment-body:
     runs-on: ubuntu-latest
